@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}Quản trị - Yêu cầu đổi mật khẩu{% endblock %}
+
+{% block content %}
+<h3 class="mb-3"><i class="bi bi-shield-lock"></i> Khu vực Quản trị</h3>
+{% include 'core/quan_tri/_nav.html' %}
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white"><strong><i class="bi bi-key"></i> Yêu cầu đặt lại mật khẩu</strong></div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr><th>Tài khoản</th><th>Vai trò</th><th>Ngày yêu cầu</th><th>Trạng thái</th><th>Đặt lại mật khẩu</th></tr>
+            </thead>
+            <tbody>
+                {% for yc in ds %}
+                <tr class="{% if yc.da_xu_ly %}table-light text-muted{% endif %}">
+                    <td class="fw-semibold">{{ yc.user.username }}
+                        {% if yc.user.get_full_name %}<div class="small text-muted">{{ yc.user.get_full_name }}</div>{% endif %}</td>
+                    <td>
+                        {% if yc.user.is_superuser %}<span class="badge text-bg-dark">Quản trị</span>
+                        {% else %}{% for g in yc.user.groups.all %}<span class="badge text-bg-info">{{ g.name }}</span> {% empty %}<span class="badge text-bg-secondary">Khách hàng</span>{% endfor %}{% endif %}
+                    </td>
+                    <td>{{ yc.ngay_tao|date:"d/m/Y H:i" }}</td>
+                    <td>
+                        {% if yc.da_xu_ly %}
+                            {% if yc.tu_choi %}<span class="badge text-bg-danger">Đã từ chối</span>
+                            {% else %}<span class="badge text-bg-success">Đã đặt lại</span>{% endif %}
+                            <div class="small text-muted">{{ yc.ngay_xu_ly|date:"d/m/Y H:i" }}</div>
+                        {% else %}<span class="badge text-bg-warning text-dark">Chờ xử lý</span>{% endif %}
+                    </td>
+                    <td>
+                        {% if yc.da_xu_ly %}
+                        <span class="text-muted small">—</span>
+                        {% elif yc.user.is_superuser %}
+                        <span class="text-muted small">Không thể đặt lại tài khoản quản trị cấp cao.</span>
+                        {% else %}
+                        <div class="d-flex gap-2 align-items-start">
+                            <form method="post" action="{% url 'quan_tri_yeu_cau_xu_ly' yc.id %}" class="d-flex gap-2">{% csrf_token %}
+                                <input type="text" name="mat_khau_moi" class="form-control form-control-sm" style="max-width:170px"
+                                       placeholder="Mật khẩu mới (≥6 ký tự)" required minlength="6">
+                                <button class="btn btn-sm btn-outline-primary text-nowrap"
+                                        onclick="return confirm('Đặt lại mật khẩu cho {{ yc.user.username }}?')">
+                                    <i class="bi bi-check-circle"></i> Đặt lại
+                                </button>
+                            </form>
+                            <form method="post" action="{% url 'quan_tri_yeu_cau_tu_choi' yc.id %}">{% csrf_token %}
+                                <button class="btn btn-sm btn-outline-danger text-nowrap"
+                                        onclick="return confirm('Từ chối yêu cầu của {{ yc.user.username }}?')">
+                                    <i class="bi bi-x-circle"></i> Từ chối
+                                </button>
+                            </form>
+                        </div>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" class="text-center text-muted py-4">Chưa có yêu cầu đặt lại mật khẩu nào.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}{{ tieu_de }}{% endblock %}
+
+{% block content %}
+<h3 class="mb-1">{{ tieu_de }}</h3>
+<p class="text-muted">{{ mo_ta }}</p>
+
+<div class="row g-3">
+    {% for pd in ds %}
+    <div class="col-md-6">
+        <div class="card h-100 shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <strong>{{ pd.ten }}</strong>
+                {% if pd.doi_tuong %}<span class="badge text-bg-light float-end">{{ pd.doi_tuong }}</span>{% endif %}
+            </div>
+            <div class="card-body">
+                {% if pd.mo_ta %}<p class="small text-muted">{{ pd.mo_ta }}</p>{% endif %}
+                <ol class="small mb-2">
+                    {% for ct in pd.chi_tiet.all %}
+                    <li>{{ ct.vac_xin.ten }}
+                        {% if ct.khoang_cach_ngay %}<span class="text-muted">(cách mũi trước {{ ct.khoang_cach_ngay }} ngày)</span>{% endif %}
+                    </li>
+                    {% endfor %}
+                </ol>
+                <a href="{% url 'dat_lich' %}" class="btn btn-sm btn-outline-primary">Đăng ký gói này</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p class="text-muted">Chưa có gói vắc-xin nào.</p>
+    {% endfor %}
+</div>
+{% endblock %}

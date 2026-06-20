@@ -1,0 +1,24 @@
+# Moi truong ao - KHONG copy/commit (tao lai bang requirements.txt)
+venv/
+.venv/
+
+# File cau hinh bi mat - moi may mot khac
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Django
+*.log
+db.sqlite3
+/staticfiles/
+/media/
+
+# VS Code
+.vscode/
+
+# He dieu hanh
+.DS_Store
+Thumbs.db

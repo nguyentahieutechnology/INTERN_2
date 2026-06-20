@@ -1,0 +1,408 @@
+/* ===== Menu hamburger cua admin ===== */
+.menu-ad > a i {
+    transition: transform .25s ease;
+}
+
+.menu-ad.show > a i {
+    transform: rotate(90deg);          /* icon xoay khi mo */
+}
+
+.menu-ad .dropdown-menu {
+    border: 0;
+    border-radius: .6rem;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, .15);
+    padding: .35rem;
+    min-width: 235px;
+    animation: menuAdFade .18s ease;
+}
+
+@keyframes menuAdFade {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.menu-ad .dropdown-item {
+    border-radius: .4rem;
+    padding: .5rem .75rem;
+    font-size: .92rem;
+    transition: background .12s ease, color .12s ease, padding-left .12s ease;
+}
+
+.menu-ad .dropdown-item i {
+    width: 1.4em;
+    color: #94a3b8;
+    transition: color .12s ease;
+}
+
+.menu-ad .dropdown-item:hover {
+    background: #eef4ff;
+    color: #0d6efd;
+    padding-left: 1rem;
+}
+
+.menu-ad .dropdown-item:hover i {
+    color: #0d6efd;
+}
+
+.menu-ad .dropdown-divider {
+    margin: .3rem .25rem;
+}
+
+
+/* ===== Tab menu (nav-pills) dang outline - dong bo voi nut outline ===== */
+.nav-pills .nav-link {
+    color: #0d6efd;
+    border: 1px solid transparent;
+    transition: border-color .15s ease, color .15s ease, background .15s ease;
+}
+
+.nav-pills .nav-link:hover {
+    border-color: #9ec5fe;
+    background-color: #f8fbff;
+}
+
+.nav-pills .nav-link.active {
+    background-color: transparent;
+    color: #0d6efd;
+    border-color: #0d6efd;
+    font-weight: 600;
+}
+
+
+/* ===== Thanh menu phu + dropdown hover ===== */
+.submenu-bar {
+    background: #fff;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.submenu {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0;
+    padding: 0;
+}
+
+.submenu > li {
+    position: relative;
+}
+
+.submenu > li > a {
+    display: block;
+    padding: .8rem 1.1rem;
+    color: #334155;
+    text-decoration: none;
+    font-size: .95rem;
+    font-weight: 500;
+    transition: color .15s ease, background .15s ease;
+}
+
+.submenu > li > a:hover,
+.submenu > li.active > a {
+    color: #0d6efd;
+}
+
+/* Mui ten chi muc co dropdown */
+.submenu > li.has-dropdown > a::after {
+    content: "";
+    display: inline-block;
+    width: .42em;
+    height: .42em;
+    margin-left: .45em;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(45deg) translateY(-2px);
+    opacity: .55;
+    transition: transform .2s ease;
+}
+
+.submenu > li.has-dropdown:hover > a::after,
+.submenu > li.has-dropdown.open > a::after {
+    transform: rotate(-135deg) translateY(0);
+}
+
+/* ===== Bang dropdown ===== */
+.dropdown-hover {
+    list-style: none;
+    margin: 0;
+    padding: .35rem 0;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 240px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: .6rem;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, .12);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: opacity .18s ease, transform .18s ease, visibility .18s ease;
+    z-index: 1050;
+}
+
+/* Hien khi hover (CSS) hoac khi JS them class .open */
+.submenu > li.has-dropdown:hover > .dropdown-hover,
+.submenu > li.has-dropdown.open > .dropdown-hover {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdown-hover li a {
+    display: block;
+    padding: .55rem 1.1rem;
+    color: #334155;
+    text-decoration: none;
+    font-size: .9rem;
+    white-space: nowrap;
+    transition: background .12s ease, color .12s ease, padding-left .12s ease;
+}
+
+.dropdown-hover li a:hover {
+    background: #f1f5f9;
+    color: #0d6efd;
+    padding-left: 1.4rem;
+}
+
+.dropdown-hover .dropdown-divider {
+    height: 0;
+    margin: .35rem 0;
+    border-top: 1px solid #eef2f7;
+}
+
+.dropdown-hover .dropdown-xemtatca a {
+    font-weight: 600;
+    color: #0d6efd;
+}
+
+/* Tren mobile: bo dinh vi tuyet doi, cho xo theo chieu doc */
+@media (max-width: 768px) {
+    .submenu { flex-direction: column; }
+    .dropdown-hover {
+        position: static;
+        box-shadow: none;
+        border: 0;
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        display: none;
+        padding-left: 1rem;
+    }
+    .submenu > li.has-dropdown.open > .dropdown-hover { display: block; }
+}
+
+
+/* ===== Nut tron noi (FAB) + menu bung ra ===== */
+.fab-container {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: 1040;
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: 12px;
+    /* vung dem de re chuot toi gan la bung (khong bi mat) */
+    padding-top: 10px;
+}
+
+.fab-main {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 0;
+    background: #0d6efd;
+    color: #fff;
+    font-size: 1.5rem;
+    box-shadow: 0 6px 18px rgba(13, 110, 253, .4);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform .25s ease, background .2s ease;
+}
+
+.fab-container:hover .fab-main {
+    transform: rotate(135deg);
+    background: #0b5ed7;
+}
+
+.fab-menu {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(12px);
+    transition: opacity .2s ease, transform .2s ease, visibility .2s ease;
+}
+
+.fab-container:hover .fab-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.fab-item {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    border: 0;
+    background: #fff;
+    color: #0d6efd;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .18);
+    cursor: pointer;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .15s ease, color .15s ease, transform .15s ease;
+}
+
+.fab-item:hover {
+    background: #0d6efd;
+    color: #fff;
+    transform: scale(1.08);
+}
+
+
+/* ===== Hop chat ===== */
+.chatbox {
+    position: fixed;
+    right: 24px;
+    bottom: 92px;
+    width: 320px;
+    max-width: calc(100vw - 32px);
+    background: #fff;
+    border-radius: .8rem;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, .25);
+    overflow: hidden;
+    z-index: 1045;
+    display: none;
+    flex-direction: column;
+}
+
+.chatbox.open {
+    display: flex;
+    animation: chatFade .2s ease;
+}
+
+@keyframes chatFade {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.chatbox-header {
+    background: #0d6efd;
+    color: #fff;
+    padding: .7rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+}
+
+.chatbox-close {
+    background: transparent;
+    border: 0;
+    color: #fff;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.chatbox-body {
+    padding: .8rem;
+    height: 300px;
+    overflow-y: auto;
+    background: #f8f9fa;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+}
+
+.chatbox-body .msg {
+    max-width: 80%;
+    padding: .5rem .75rem;
+    border-radius: .8rem;
+    font-size: .9rem;
+    line-height: 1.35;
+}
+
+.chatbox-body .msg.bot {
+    background: #e9ecef;
+    align-self: flex-start;
+    border-bottom-left-radius: .2rem;
+}
+
+.chatbox-body .msg.user {
+    background: #0d6efd;
+    color: #fff;
+    align-self: flex-end;
+    border-bottom-right-radius: .2rem;
+}
+
+/* Danh muc cau hoi goi y */
+.chat-suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .4rem;
+    margin-top: .15rem;
+}
+
+.chat-suggest {
+    border: 1px solid #0d6efd;
+    background: #fff;
+    color: #0d6efd;
+    border-radius: 1rem;
+    padding: .28rem .7rem;
+    font-size: .8rem;
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease;
+}
+
+.chat-suggest:hover {
+    background: #0d6efd;
+    color: #fff;
+}
+
+/* Link dieu huong trong cau tra loi cua bot */
+.chat-link {
+    display: inline-block;
+    margin-top: .4rem;
+    font-size: .82rem;
+    font-weight: 600;
+    color: #0d6efd;
+    text-decoration: none;
+}
+
+.chat-link:hover {
+    text-decoration: underline;
+}
+
+.chatbox-input {
+    display: flex;
+    border-top: 1px solid #e9ecef;
+}
+
+.chatbox-input input {
+    flex: 1;
+    border: 0;
+    padding: .65rem .8rem;
+    outline: none;
+    font-size: .9rem;
+}
+
+.chatbox-input button {
+    border: 0;
+    background: #0d6efd;
+    color: #fff;
+    padding: 0 1rem;
+    cursor: pointer;
+}
+
+@media (max-width: 576px) {
+    .fab-container { right: 16px; bottom: 16px; }
+    .chatbox { right: 12px; bottom: 84px; }
+}

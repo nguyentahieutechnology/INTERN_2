@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}Lễ tân - Lịch hẹn{% endblock %}
+
+{% block content %}
+<h3 class="mb-3"><i class="bi bi-clipboard-check"></i> Khu vực Lễ tân</h3>
+{% include 'core/le_tan/_nav.html' %}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    {# Loc theo trang thai #}
+    <div class="btn-group btn-group-sm">
+        <a href="{% url 'le_tan_lich_hen' %}" class="btn {% if not trang_thai %}btn-outline-primary{% else %}btn-outline-primary{% endif %}">Tất cả</a>
+        {% for ma, ten in cac_trang_thai %}
+        <a href="?trang_thai={{ ma }}" class="btn {% if trang_thai == ma %}btn-outline-primary{% else %}btn-outline-primary{% endif %}">{{ ten }}</a>
+        {% endfor %}
+    </div>
+    {# Tim theo ten khach #}
+    <form method="get" class="d-flex gap-2">
+        {% if trang_thai %}<input type="hidden" name="trang_thai" value="{{ trang_thai }}">{% endif %}
+        <input type="text" name="q" value="{{ q }}" class="form-control form-control-sm" placeholder="Tìm theo tên khách...">
+        <button class="btn btn-sm btn-outline-secondary">Tìm</button>
+    </form>
+</div>
+
+<div class="card shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr><th>Khách hàng</th><th>Điện thoại</th><th>Ngày hẹn</th><th>Giờ</th><th>Gói tiêm</th><th>Chỉ định</th><th>Trạng thái</th><th>Thao tác</th></tr>
+            </thead>
+            <tbody>
+                {% for lh in ds %}
+                <tr {% if 'Tái khám sau phản ứng' in lh.ghi_chu %}class="table-danger" title="{{ lh.ghi_chu }}"{% endif %}>
+                    <td class="fw-semibold">{{ lh.khach_hang.ho_ten }}</td>
+                    <td>{{ lh.khach_hang.so_dien_thoai }}</td>
+                    <td>{{ lh.ngay_hen|date:"d/m/Y" }}</td>
+                    <td>{{ lh.gio_hen|time:"H:i"|default:"-" }}</td>
+                    <td>{{ lh.phac_do.ten|default:"-" }}</td>
+                    <td>
+                        {% if lh.loai_chi_dinh == 'benh_vien' %}
+                            <span class="small">BV: {{ lh.benh_vien }}{% if lh.bac_si_chi_dinh %}<br>BS: {{ lh.bac_si_chi_dinh }}{% endif %}</span>
+                        {% else %}<span class="text-muted small">Khách tự chọn</span>{% endif %}
+                    </td>
+                    <td>{% include 'core/le_tan/_badge.html' %}</td>
+                    <td>{% include 'core/le_tan/_actions.html' %}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="8" class="text-center text-muted py-4">Không có lịch hẹn phù hợp.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

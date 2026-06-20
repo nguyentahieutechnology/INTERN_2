@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+{% block title %}Lễ tân - Khách hàng{% endblock %}
+
+{% block content %}
+<h3 class="mb-3"><i class="bi bi-clipboard-check"></i> Khu vực Lễ tân</h3>
+{% include 'core/le_tan/_nav.html' %}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <form method="get" class="d-flex gap-2">
+        <input type="text" name="q" value="{{ q }}" class="form-control form-control-sm"
+               placeholder="Tìm theo tên hoặc số điện thoại...">
+        <button class="btn btn-sm btn-outline-secondary">Tìm</button>
+    </form>
+    <button class="btn btn-sm btn-outline-success" type="button" data-bs-toggle="collapse" data-bs-target="#formKhach">
+        <i class="bi bi-person-plus"></i> Thêm khách hàng
+    </button>
+</div>
+
+<div class="collapse {% if form.errors %}show{% endif %}" id="formKhach">
+    <div class="card shadow-sm mb-3 border-success">
+        <div class="card-header bg-white"><strong>Thêm khách hàng mới</strong></div>
+        <div class="card-body">
+            <form method="post" action="{% url 'le_tan_khach_hang' %}">
+                {% csrf_token %}
+                <div class="row g-2">
+                    <div class="col-md-6">{% include 'core/_field.html' with field=form.ho_ten %}</div>
+                    <div class="col-md-3">{% include 'core/_field.html' with field=form.gioi_tinh %}</div>
+                    <div class="col-md-3">{% include 'core/_field.html' with field=form.ngay_sinh %}</div>
+                    <div class="col-md-4">{% include 'core/_field.html' with field=form.so_dien_thoai %}</div>
+                    <div class="col-md-4">{% include 'core/_field.html' with field=form.cccd %}</div>
+                    <div class="col-md-4">{% include 'core/_field.html' with field=form.dia_chi %}</div>
+                </div>
+                <button class="btn btn-sm btn-outline-primary"><i class="bi bi-check-circle"></i> Lưu khách hàng</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<p class="small text-muted mb-1"><i class="bi bi-info-circle"></i> Bấm đúp vào một dòng để chỉnh sửa thông tin khách hàng.</p>
+<div class="card shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr><th>Họ tên</th><th>Giới tính</th><th>Ngày sinh</th><th>Điện thoại</th><th>Mũi tiêm</th><th>QR</th></tr>
+            </thead>
+            <tbody>
+                {% for kh in ds %}
+                <tr ondblclick="location.href='{% url 'le_tan_khach_hang_sua' kh.id %}'" style="cursor:pointer" title="Bấm đúp để sửa">
+                    <td class="fw-semibold">{{ kh.ho_ten }}</td>
+                    <td>{{ kh.gioi_tinh }}</td>
+                    <td>{{ kh.ngay_sinh|date:"d/m/Y" }}</td>
+                    <td>{{ kh.so_dien_thoai }}</td>
+                    <td><span class="badge text-bg-info">{{ kh.mui_tiem.count }}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-success btn-qr" 
+                                data-url="{{ request.scheme }}://{{ request.get_host }}{% url 'chung_nhan_tiem' kh.id %}"
+                                data-name="{{ kh.ho_ten }}"
+                                data-bs-toggle="modal" data-bs-target="#qrModal">
+                            <i class="bi bi-qr-code"></i>
+                        </button>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6" class="text-center text-muted py-4">Không tìm thấy khách hàng.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal hien thi QR Code -->
+<div class="modal fade" id="qrModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content text-center">
+            <div class="modal-header border-0 pb-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body pt-0">
+                <h6 class="fw-bold mb-3" id="qrName"></h6>
+                <div id="modalQrcode" class="d-inline-block p-2 bg-white border mb-2" style="min-width: 180px; min-height: 180px;"></div>
+                <p class="small text-muted mb-0">Quét để xem chứng nhận tiêm chủng</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .address-suggestions {
+        position: absolute;
+        z-index: 1000;
+        background: white;
+        width: 100%;
+        border: 1px solid #ddd;
+        border-top: none;
+        max-height: 200px;
+        overflow-y: auto;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        display: none;
+    }
+    .suggestion-item {
+        padding: 8px 12px;
+        cursor: pointer;
+        border-bottom: 1px solid #eee;
+        font-size: 0.9rem;
+    }
+    .suggestion-item:hover {
+        background-color: #f8f9fa;
+    }
+    .address-container {
+        position: relative;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 1. Xu ly hien thi QR Code trong Modal
+    var qrModal = document.getElementById('qrModal');
+    var modalQrContainer = document.getElementById("modalQrcode");
+
+    if (qrModal) {
+        qrModal.addEventListener('shown.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var url = button.getAttribute('data-url');
+            var name = button.getAttribute('data-name');
+            
+            document.getElementById('qrName').textContent = name;
+            modalQrContainer.innerHTML = ''; 
+            
+            try {
+                new QRCode(modalQrContainer, {
+                    text: url,
+                    width: 180,
+                    height: 180,
+                    colorDark : "#198754",
+                    colorLight : "#ffffff",
+                    correctLevel : QRCode.CorrectLevel.H
+                });
+            } catch (e) {
+                console.error("QR Error:", e);
+                modalQrContainer.innerHTML = '<div class="text-danger small">Lỗi tạo mã QR</div>';
+            }
+        });
+    }
+
+    // 2. Autocomplete dia chi
+    const addressInput = document.querySelector('input[name="dia_chi"]');
+    if (addressInput) {
+        const container = document.createElement('div');
+        container.className = 'address-container';
+        addressInput.parentNode.insertBefore(container, addressInput);
+        container.appendChild(addressInput);
+
+        const suggestionBox = document.createElement('div');
+        suggestionBox.className = 'address-suggestions';
+        container.appendChild(suggestionBox);
+
+        let timeout = null;
+        addressInput.addEventListener('input', function() {
+            clearTimeout(timeout);
+            const query = this.value;
+            if (query.length < 3) {
+                suggestionBox.style.display = 'none';
+                return;
+            }
+            timeout = setTimeout(() => {
+                fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&limit=5&countrycodes=vn`)
+                    .then(response => response.json())
+                    .then(data => {
+                        suggestionBox.innerHTML = '';
+                        if (data.length > 0) {
+                            data.forEach(item => {
+                                const div = document.createElement('div');
+                                div.className = 'suggestion-item';
+                                div.textContent = item.display_name;
+                                div.addEventListener('click', () => {
+                                    addressInput.value = item.display_name;
+                                    suggestionBox.style.display = 'none';
+                                });
+                                suggestionBox.appendChild(div);
+                            });
+                            suggestionBox.style.display = 'block';
+                        } else {
+                            suggestionBox.style.display = 'none';
+                        }
+                    });
+            }, 500);
+        });
+        document.addEventListener('click', function(e) {
+            if (!container.contains(e.target)) suggestionBox.style.display = 'none';
+        });
+    }
+});
+</script>
+{% endblock %}

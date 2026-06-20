@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}Quá trình{% endblock %}
+
+{% block content %}
+{% if request.GET.khu == 'bac_si' %}
+<h3 class="mb-3"><i class="bi bi-person-vcard"></i> Khu vực Bác sĩ</h3>
+{% include 'core/bac_si/_nav.html' %}
+{% elif la_le_tan or user.is_superuser %}
+<h3 class="mb-3"><i class="bi bi-clipboard-check"></i> Khu vực Lễ tân</h3>
+{% include 'core/le_tan/_nav.html' %}
+{% elif la_bac_si %}
+<h3 class="mb-3"><i class="bi bi-person-vcard"></i> Khu vực Bác sĩ</h3>
+{% include 'core/bac_si/_nav.html' %}
+{% else %}
+<h3 class="mb-3"><i class="bi bi-diagram-3"></i> Quá trình</h3>
+{% endif %}
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white"><strong>Quá trình của các lịch hẹn đã xác nhận</strong></div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr><th>Khách hàng</th><th>Ngày hẹn</th><th>Vắc-xin (đơn)</th><th>Giai đoạn hiện tại</th><th></th></tr>
+            </thead>
+            <tbody>
+                {% for qt in ds %}
+                <tr {% if qt.lich_hen.la_tai_kham %}class="table-danger"{% endif %}>
+                    <td class="fw-semibold">{{ qt.lich_hen.khach_hang.ho_ten }}</td>
+                    <td>{{ qt.lich_hen.ngay_hen|date:"d/m/Y" }}</td>
+                    <td>
+                        {% if qt.lich_hen.la_tai_kham %}
+                        <span class="badge text-bg-danger">Tái khám</span>
+                        <div class="small text-muted">{{ qt.lich_hen.ghi_chu }}</div>
+                        {% else %}{{ qt.lich_hen.vac_xin.ten|default:"-" }}{% endif %}
+                    </td>
+                    <td>
+                        <span class="badge {% if qt.giai_doan == 9 %}text-bg-success{% else %}text-bg-info{% endif %}">
+                            {% if qt.giai_doan == 9 %}{{ qt.get_giai_doan_display }}
+                            {% elif qt.lich_hen.la_tai_kham %}Bước {{ qt.giai_doan }}/4 — {{ qt.ten_giai_doan }}
+                            {% else %}Bước {{ qt.giai_doan }}/8 — {{ qt.get_giai_doan_display }}{% endif %}
+                        </span>
+                    </td>
+                    <td><a href="{% url 'quy_trinh_chi_tiet' qt.id %}{% if request.GET.khu == 'bac_si' or la_bac_si %}?khu=bac_si{% endif %}" class="btn btn-sm btn-outline-primary">Xem / Xử lý</a></td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" class="text-center text-muted py-4">
+                    Chưa có quy trình nào. Hãy <a href="{% url 'le_tan_lich_hen' %}">xác nhận một lịch hẹn</a> để bắt đầu.
+                </td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

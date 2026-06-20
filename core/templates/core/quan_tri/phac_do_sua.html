@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% block title %}Phác đồ - {{ pd.ten }}{% endblock %}
+
+{% block content %}
+<h3 class="mb-3"><i class="bi bi-shield-lock"></i> Khu vực Quản trị</h3>
+{% include 'core/quan_tri/_nav.html' %}
+
+<a href="{% url 'quan_tri_phac_do' %}" class="small text-muted">&larr; Về danh mục phác đồ</a>
+
+<form method="post" action="{% url 'quan_tri_phac_do_sua' pd.id %}">
+    {% csrf_token %}
+    <div class="row g-3 mt-1">
+        <!-- Thong tin chung -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white"><strong><i class="bi bi-pencil-square"></i> Thông tin phác đồ</strong></div>
+                <div class="card-body">
+                    {% if form.non_field_errors %}<div class="alert alert-danger py-2 small">{{ form.non_field_errors|striptags }}</div>{% endif %}
+                    {% for field in form %}{% include 'core/_field.html' with field=field %}{% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Cac mui tiem -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <strong><i class="bi bi-list-ol"></i> Các mũi tiêm trong phác đồ</strong>
+                    <button type="button" class="btn btn-sm btn-outline-success" id="them-mui"><i class="bi bi-plus-lg"></i> Thêm mũi</button>
+                </div>
+                {{ formset.management_form }}
+                {% if formset.non_form_errors %}<div class="alert alert-danger py-2 small m-2">{{ formset.non_form_errors|striptags }}</div>{% endif %}
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead class="table-light"><tr>
+                            <th style="width:90px">Mũi số</th>
+                            <th>Vắc-xin</th>
+                            <th style="width:180px">Cách mũi trước (ngày)</th>
+                            <th style="width:50px"></th>
+                        </tr></thead>
+                        <tbody id="mui-body">
+                            {% for f in formset %}
+                            <tr class="mui-row">
+                                {{ f.id }}
+                                <td>{{ f.mui_so }}{% if f.mui_so.errors %}<div class="text-danger small">{{ f.mui_so.errors|striptags }}</div>{% endif %}</td>
+                                <td>{{ f.vac_xin }}{% if f.vac_xin.errors %}<div class="text-danger small">{{ f.vac_xin.errors|striptags }}</div>{% endif %}</td>
+                                <td>{{ f.khoang_cach_ngay }}{% if f.khoang_cach_ngay.errors %}<div class="text-danger small">{{ f.khoang_cach_ngay.errors|striptags }}</div>{% endif %}</td>
+                                <td class="text-center">
+                                    <span class="d-none">{{ f.DELETE }}</span>
+                                    <button type="button" class="btn btn-sm btn-outline-danger xoa-mui" title="Xóa mũi"><i class="bi bi-x-lg"></i></button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer bg-white small text-muted">
+                    Mũi 1 để khoảng cách = <strong>0</strong>. Mũi sau nhập số <strong>ngày cách mũi liền trước</strong> (vd 28, 60, 180…) — hệ thống dùng để tự tính ngày hẹn mũi kế tiếp.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <button class="btn btn-outline-primary"><i class="bi bi-check-circle"></i> Lưu phác đồ</button>
+        <a href="{% url 'quan_tri_phac_do' %}" class="btn btn-outline-secondary">Hủy</a>
+    </div>
+</form>
+
+<!-- Mau 1 dong mui de JS nhan ban -->
+<template id="mui-trong">
+    <tr class="mui-row">
+        {{ formset.empty_form.id }}
+        <td>{{ formset.empty_form.mui_so }}</td>
+        <td>{{ formset.empty_form.vac_xin }}</td>
+        <td>{{ formset.empty_form.khoang_cach_ngay }}</td>
+        <td class="text-center">
+            <span class="d-none">{{ formset.empty_form.DELETE }}</span>
+            <button type="button" class="btn btn-sm btn-outline-danger xoa-mui" title="Xóa mũi"><i class="bi bi-x-lg"></i></button>
+        </td>
+    </tr>
+</template>
+
+<script>
+(function () {
+    var body = document.getElementById('mui-body');
+    var total = document.getElementById('id_{{ formset.prefix }}-TOTAL_FORMS');
+    var mau = document.getElementById('mui-trong').innerHTML;
+
+    document.getElementById('them-mui').addEventListener('click', function () {
+        var idx = parseInt(total.value, 10);
+        var html = mau.replace(/__prefix__/g, idx).trim();
+        var wrap = document.createElement('tbody');
+        wrap.innerHTML = html;
+        body.appendChild(wrap.firstChild);
+        total.value = idx + 1;
+    });
+
+    body.addEventListener('click', function (e) {
+        var btn = e.target.closest('.xoa-mui');
+        if (!btn) return;
+        var row = btn.closest('tr');
+        var del = row.querySelector('input[type=checkbox]');
+        if (del) {            // dong da luu trong DB -> danh dau xoa
+            del.checked = true;
+            row.style.display = 'none';
+        } else {              // dong moi them -> bo khoi DOM
+            row.remove();
+        }
+    });
+})();
+</script>
+
+<script>
+(function () {
+    var nhom = document.getElementById('id_nhom');
+    var dt = document.getElementById('id_doi_tuong');
+    if (!nhom || !dt) return;
+    var MAP = { tre_em: 'Trẻ em (dưới 9 tuổi)', nguoi_lon: 'Người lớn (từ 18 tuổi)' };
+    var macDinh = [MAP.tre_em, MAP.nguoi_lon];
+    function capNhat() {
+        var v = dt.value.trim();
+        if (v === '' || macDinh.indexOf(v) !== -1) dt.value = MAP[nhom.value] || '';
+    }
+    nhom.addEventListener('change', capNhat);
+    capNhat();
+})();
+</script>
+{% endblock %}

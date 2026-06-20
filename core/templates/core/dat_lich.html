@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Đặt lịch hẹn{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-7 col-lg-6">
+        <div class="card shadow-sm mt-4">
+            <div class="card-body p-4">
+                <h4 class="mb-3"><i class="bi bi-calendar-plus text-primary"></i> Đặt lịch hẹn tiêm</h4>
+
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger py-2 small">{{ form.non_field_errors|striptags }}</div>
+                {% endif %}
+
+                <form method="post" action="{% url 'dat_lich' %}">
+                    {% csrf_token %}
+
+                    {% include 'core/_field.html' with field=form.khach_hang %}
+                    {% include 'core/_field.html' with field=form.vac_xin %}
+                    {% include 'core/_field.html' with field=form.phac_do %}
+                    {% include 'core/_field.html' with field=form.ngay_hen %}
+                    {% include 'core/_field.html' with field=form.gio_hen %}
+
+                    {# Hinh thuc chi dinh (radio) #}
+                    <div class="mb-3">
+                        <label class="form-label d-block">{{ form.loai_chi_dinh.label }}</label>
+                        {% for radio in form.loai_chi_dinh %}
+                        <div class="form-check form-check-inline">
+                            {{ radio.tag }}
+                            <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    {# Khoi an/hien khi chon "Benh vien chi dinh" #}
+                    <div id="khoi-chi-dinh" class="border rounded p-3 mb-3 bg-light">
+                        {% include 'core/_field.html' with field=form.benh_vien %}
+                        {% include 'core/_field.html' with field=form.bac_si_chi_dinh %}
+                    </div>
+
+                    {% include 'core/_field.html' with field=form.ghi_chu %}
+
+                    <button type="submit" class="btn btn-outline-primary w-100">
+                        <i class="bi bi-check-circle"></i> Xác nhận đặt lịch
+                    </button>
+                </form>
+
+                <div class="text-center mt-3">
+                    <a href="{% url 'ca_nhan' %}" class="small text-muted">&larr; Về hồ sơ của tôi</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{ phac_do_vacxin|json_script:"phacDoVacXin" }}
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'core/js/dat_lich.js' %}?v=2"></script>
+{% endblock %}

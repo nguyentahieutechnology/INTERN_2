@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}Lịch sử xuất kho{% endblock %}
+
+{% block content %}
+<h3 class="mb-3"><i class="bi bi-box-seam"></i> Khu vực Thủ kho</h3>
+{% include 'core/thu_kho/_nav.html' %}
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white"><strong>Lịch sử xuất kho</strong></div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr><th>Thời gian</th><th>Vắc-xin</th><th>Số lô</th><th>Hạn sử dụng</th><th>SL</th><th>Khách hàng</th><th>Người xuất</th><th>Phiếu</th></tr>
+            </thead>
+            <tbody>
+                {% for p in ds %}
+                <tr>
+                    <td>{{ p.ngay_xuat|date:"d/m/Y H:i" }}</td>
+                    <td>{{ p.lo.vac_xin.ten }}</td>
+                    <td>{{ p.lo.so_lo }}</td>
+                    <td>{{ p.lo.han_su_dung|date:"d/m/Y" }}</td>
+                    <td>{{ p.so_luong }}</td>
+                    <td>{{ p.quy_trinh.lich_hen.khach_hang.ho_ten|default:"-" }}</td>
+                    <td>{% if p.nguoi_xuat %}{{ p.nguoi_xuat.get_full_name|default:p.nguoi_xuat.username }}{% else %}-{% endif %}</td>
+                    <td>
+                        <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
+                                data-bs-target="#modalPhieuXuat" data-pdf="{% url 'phieu_xuat_kho_pdf' p.id %}">
+                            <i class="bi bi-file-earmark-pdf"></i> Phiếu
+                        </button>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="8" class="text-center text-muted py-4">Chưa có lần xuất kho nào.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal xem truoc phieu xuat kho -->
+<div class="modal fade" id="modalPhieuXuat" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title mb-0"><i class="bi bi-file-earmark-pdf text-danger"></i> Phiếu xuất kho</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body p-0">
+                <iframe id="phieuXuatFrame" title="Xem trước phiếu xuất kho" style="width:100%; height:78vh; border:0;"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+(function () {
+    var m = document.getElementById('modalPhieuXuat');
+    if (!m) return;
+    var frame = document.getElementById('phieuXuatFrame');
+    m.addEventListener('show.bs.modal', function (e) {
+        var btn = e.relatedTarget;
+        if (btn) frame.src = btn.getAttribute('data-pdf');
+    });
+    m.addEventListener('hidden.bs.modal', function () { frame.removeAttribute('src'); });
+})();
+</script>
+{% endblock %}

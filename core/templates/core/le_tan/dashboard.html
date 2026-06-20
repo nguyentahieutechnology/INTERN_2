@@ -1,0 +1,266 @@
+{% extends 'base.html' %}
+{% block title %}Lễ tân - Dashboard{% endblock %}
+
+{% block content %}
+<h3 class="mb-3"><i class="bi bi-clipboard-check"></i> Khu vực Lễ tân</h3>
+{% include 'core/le_tan/_nav.html' %}
+
+{% if lo_sap_het_han or lo_ton_thap %}
+<div class="row g-3 mb-4">
+    <div class="col-12">
+        <div class="card border-danger shadow-sm">
+            <div class="card-header bg-danger text-white">
+                <i class="bi bi-exclamation-triangle-fill"></i> <strong>Cảnh báo kho vắc-xin</strong>
+            </div>
+            <div class="card-body py-2">
+                <div class="row">
+                    {% if lo_sap_het_han %}
+                    <div class="col-md-6 border-end">
+                        <small class="text-danger fw-bold">Sắp hết hạn (trong 30 ngày):</small>
+                        <ul class="mb-0 small">
+                            {% for lo in lo_sap_het_han %}
+                            <li>{{ lo.vac_xin.ten }} (Lô: {{ lo.so_lo }}) - Hết hạn: <span class="text-danger">{{ lo.han_su_dung|date:"d/m/Y" }}</span></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                    {% if lo_ton_thap %}
+                    <div class="col-md-6">
+                        <small class="text-warning-emphasis fw-bold">Sắp hết hàng (dưới 10 liều):</small>
+                        <ul class="mb-0 small">
+                            {% for lo in lo_ton_thap %}
+                            <li>{{ lo.vac_xin.ten }} (Lô: {{ lo.so_lo }}) - Còn lại: <span class="badge text-bg-warning">{{ lo.so_luong_ton }}</span></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="d-flex justify-content-end mb-2">
+    <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modalPdf">
+        <i class="bi bi-file-earmark-pdf"></i> Xem trước &amp; xuất PDF
+    </button>
+</div>
+
+<!-- So lieu tong hop -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card text-bg-success shadow-sm"><div class="card-body">
+            <h6><i class="bi bi-cash-stack"></i> Tổng doanh thu</h6>
+            <p class="h4 mb-0">{{ tong_doanh_thu|floatformat:0 }} đ</p>
+            <small>Tháng này: {{ doanh_thu_thang|floatformat:0 }} đ</small></div></div>
+    </div>
+    <div class="col-md-3">
+        <a href="{% url 'le_tan_khach_hang' %}" class="text-decoration-none">
+        <div class="card text-bg-primary shadow-sm"><div class="card-body">
+            <h6><i class="bi bi-people"></i> Khách hàng</h6>
+            <p class="display-6 mb-0">{{ tong_khach }}</p></div></div></a>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-bg-info shadow-sm"><div class="card-body">
+            <h6><i class="bi bi-syringe"></i> Tổng lượt tiêm</h6>
+            <p class="display-6 mb-0">{{ tong_luot_tiem }}</p></div></div>
+    </div>
+    <div class="col-md-3">
+        <a href="{% url 'le_tan_lich_hen' %}?trang_thai=cho" class="text-decoration-none">
+        <div class="card text-bg-warning shadow-sm"><div class="card-body">
+            <h6><i class="bi bi-hourglass-split"></i> Chờ xác nhận</h6>
+            <p class="display-6 mb-0">{{ cho_xac_nhan }}</p></div></div></a>
+    </div>
+</div>
+
+<!-- Bieu do -->
+<div class="card shadow-sm mb-3">
+    <div class="card-body">
+        <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
+            <span class="small text-muted"><i class="bi bi-funnel"></i> Xem theo:</span>
+            <select id="cheDoTK" class="form-select form-select-sm" style="width:auto">
+                <option value="thang" selected>Tháng (trong năm)</option>
+                <option value="nam">Năm (10 năm gần nhất)</option>
+                <option value="ngay">Ngày (trong tháng)</option>
+            </select>
+            <select id="chonNam" class="form-select form-select-sm" style="width:auto">
+                {% for y in nam_list %}<option value="{{ y }}" {% if y == nam_hien %}selected{% endif %}>Năm {{ y }}</option>{% endfor %}
+            </select>
+            <input type="month" id="chonThang" class="form-control form-control-sm" style="width:auto" value="{{ thang_hien }}">
+        </div>
+        <div class="row g-3">
+            <div class="col-lg-7">
+                <h6 class="text-muted"><i class="bi bi-bar-chart-line"></i> Doanh thu</h6>
+                <canvas id="chartDoanhThu" height="120"></canvas>
+            </div>
+            <div class="col-lg-5">
+                <h6 class="text-muted"><i class="bi bi-graph-up"></i> Lượt tiêm</h6>
+                <canvas id="chartLuotTiem" height="170"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{ chart_kh_nhan|json_script:"jsKhNhan" }}
+{{ chart_kh_somui|json_script:"jsKhSoMui" }}
+
+<div class="row g-3">
+    <!-- So lan tiem cua tung khach -->
+    <div class="col-lg-7">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white"><strong>Số lần tiêm theo khách hàng</strong></div>
+            <div class="card-body pb-0"><canvas id="chartKhachTiem" height="150"></canvas></div>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light"><tr><th>Khách hàng</th><th>Điện thoại</th><th class="text-end">Số lần tiêm</th></tr></thead>
+                    <tbody>
+                        {% for kh in khach_tiem %}
+                        <tr>
+                            <td class="fw-semibold">{{ kh.ho_ten }}</td>
+                            <td>{{ kh.so_dien_thoai }}</td>
+                            <td class="text-end"><span class="badge text-bg-info">{{ kh.so_mui }}</span></td>
+                        </tr>
+                        {% empty %}<tr><td colspan="3" class="text-center text-muted py-4">Chưa có lượt tiêm nào.</td></tr>{% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lich su thanh toan -->
+    <div class="col-lg-5">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white"><strong><i class="bi bi-cash-coin"></i> Lịch sử thanh toán (<span id="ttCount">{{ thanh_toan_moi.count }}</span>)</strong></div>
+            <div class="table-responsive" style="max-height:430px; overflow-y:auto">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light" style="position:sticky; top:0; z-index:1">
+                        <tr><th>Ngày</th><th>Khách</th><th>Phương thức</th><th class="text-end">Số tiền</th></tr>
+                    </thead>
+                    <tbody id="ttBody">
+                        {% for tt in thanh_toan_moi %}
+                        <tr>
+                            <td>{{ tt.ngay_thanh_toan|date:"d/m/Y H:i" }}</td>
+                            <td>{{ tt.khach_hang.ho_ten }}</td>
+                            <td><span class="badge text-bg-light">{{ tt.get_phuong_thuc_display }}</span></td>
+                            <td class="text-end">{{ tt.tong_tien|floatformat:0 }} đ</td>
+                        </tr>
+                        {% empty %}<tr><td colspan="4" class="text-center text-muted py-4">Chưa có thanh toán nào.</td></tr>{% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal xem truoc PDF -->
+<div class="modal fade" id="modalPdf" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title mb-0"><i class="bi bi-file-earmark-pdf text-danger"></i> Xem trước báo cáo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body p-0">
+                <iframe id="pdfFrame" data-src="{% url 'le_tan_bao_cao_pdf' %}" title="Xem trước báo cáo"
+                        style="width:100%; height:75vh; border:0;"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+(function () {
+    // ===== Bieu do doanh thu + luot tiem (dong theo nam/thang/ngay) =====
+    var chartDT = new Chart(document.getElementById('chartDoanhThu'), {
+        type: 'bar',
+        data: { labels: [], datasets: [{ label: 'Doanh thu (đ)', data: [], backgroundColor: '#198754' }] },
+        options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+    });
+    var chartLT = new Chart(document.getElementById('chartLuotTiem'), {
+        type: 'line',
+        data: { labels: [], datasets: [{ label: 'Lượt tiêm', data: [], borderColor: '#0d6efd', backgroundColor: 'rgba(13,110,253,.15)', fill: true, tension: .3 }] },
+        options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+    });
+
+    var cheDo = document.getElementById('cheDoTK');
+    var chonNam = document.getElementById('chonNam');
+    var chonThang = document.getElementById('chonThang');
+
+    function thamSo() {
+        var mode = cheDo.value;
+        var p = 'che_do=' + mode;
+        if (mode === 'thang') p += '&nam=' + encodeURIComponent(chonNam.value);
+        if (mode === 'ngay') p += '&thang=' + encodeURIComponent(chonThang.value);
+        return p;
+    }
+    function capNhatTK() {
+        var mode = cheDo.value;
+        chonNam.style.display = (mode === 'thang') ? '' : 'none';
+        chonThang.style.display = (mode === 'ngay') ? '' : 'none';
+        fetch('{% url "le_tan_thong_ke" %}?' + thamSo()).then(function (r) { return r.json(); }).then(function (d) {
+            chartDT.data.labels = d.labels;
+            chartDT.data.datasets[0].data = d.doanh_thu;
+            chartDT.update();
+            chartLT.data.labels = d.labels;
+            chartLT.data.datasets[0].data = d.luot_tiem;
+            chartLT.update();
+            capNhatThanhToan(d.thanh_toan);
+        });
+    }
+
+    var ttBody = document.getElementById('ttBody');
+    var ttCount = document.getElementById('ttCount');
+    function capNhatThanhToan(ds) {
+        if (!ttBody) return;
+        ttBody.innerHTML = '';
+        if (!ds || !ds.length) {
+            var tr0 = document.createElement('tr');
+            tr0.innerHTML = '<td colspan="4" class="text-center text-muted py-4">Chưa có thanh toán nào.</td>';
+            ttBody.appendChild(tr0);
+        } else {
+            ds.forEach(function (t) {
+                function td(txt, cls) { var c = document.createElement('td'); if (cls) c.className = cls; c.textContent = txt; return c; }
+                var tr = document.createElement('tr');
+                tr.appendChild(td(t.ngay));
+                tr.appendChild(td(t.khach));
+                var ptd = document.createElement('td');
+                var badge = document.createElement('span'); badge.className = 'badge text-bg-light'; badge.textContent = t.pt;
+                ptd.appendChild(badge); tr.appendChild(ptd);
+                tr.appendChild(td(t.tien + ' đ', 'text-end'));
+                ttBody.appendChild(tr);
+            });
+        }
+        if (ttCount) ttCount.textContent = ds ? ds.length : 0;
+    }
+    cheDo.addEventListener('change', capNhatTK);
+    chonNam.addEventListener('change', capNhatTK);
+    chonThang.addEventListener('change', capNhatTK);
+    capNhatTK();
+
+    var khNhan = JSON.parse(document.getElementById('jsKhNhan').textContent);
+    var khSoMui = JSON.parse(document.getElementById('jsKhSoMui').textContent);
+    new Chart(document.getElementById('chartKhachTiem'), {
+        type: 'bar',
+        data: { labels: khNhan, datasets: [{ label: 'Số lần tiêm', data: khSoMui, backgroundColor: '#0dcaf0' }] },
+        options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, ticks: { precision: 0 } } } }
+    });
+
+    // Chi tai PDF vao iframe khi mo modal
+    var modalPdf = document.getElementById('modalPdf');
+    if (modalPdf) {
+        var frame = document.getElementById('pdfFrame');
+        modalPdf.addEventListener('show.bs.modal', function () {
+            // PDF xem theo dung bo loc dang chon
+            frame.src = '{% url "le_tan_bao_cao_pdf" %}?' + thamSo();
+        });
+        modalPdf.addEventListener('hidden.bs.modal', function () {
+            frame.removeAttribute('src');
+        });
+    }
+})();
+</script>
+{% endblock %}

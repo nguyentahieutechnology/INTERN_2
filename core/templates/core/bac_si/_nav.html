@@ -1,0 +1,14 @@
+<ul class="nav nav-pills mb-3">
+    <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name == 'bac_si_dashboard' %}active{% endif %}"
+           href="{% url 'bac_si_dashboard' %}"><i class="bi bi-hourglass-split"></i> Hàng chờ</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name == 'bac_si_lich_su' %}active{% endif %}"
+           href="{% url 'bac_si_lich_su' %}"><i class="bi bi-journal-text"></i> Lịch sử khám</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% if 'quy_trinh' in request.resolver_match.url_name %}active{% endif %}"
+           href="{% url 'quy_trinh_list' %}?khu=bac_si"><i class="bi bi-diagram-3"></i> Quá trình</a>
+    </li>
+</ul>

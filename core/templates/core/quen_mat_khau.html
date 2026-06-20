@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Quên mật khẩu{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="mt-4 mb-2">
+            <a href="{% url 'dang_nhap' %}" class="small text-muted"><i class="bi bi-arrow-left"></i> Về đăng nhập</a>
+        </div>
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <div class="text-center mb-3">
+                    <i class="bi bi-key text-primary" style="font-size:2.5rem"></i>
+                    <h4 class="mt-2 mb-0">Quên mật khẩu</h4>
+                    <p class="text-muted small mb-0">Nhập tên đăng nhập để gửi yêu cầu cấp lại mật khẩu</p>
+                </div>
+
+                <form method="post" action="{% url 'quen_mat_khau' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label" for="id_username">Tên đăng nhập</label>
+                        <input type="text" name="username" id="id_username"
+                               class="form-control" autofocus required
+                               placeholder="Tên đăng nhập của bạn">
+                    </div>
+                    <button type="submit" class="btn btn-outline-primary w-100">
+                        <i class="bi bi-send"></i> Gửi yêu cầu đặt lại mật khẩu
+                    </button>
+                </form>
+
+                <div class="alert alert-light border small mt-3 mb-0">
+                    <i class="bi bi-info-circle text-primary"></i>
+                    Yêu cầu sẽ được gửi tới <strong>quản trị viên</strong> để cấp lại mật khẩu.
+                    Sau khi được đặt lại, bạn đăng nhập với mật khẩu mới.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

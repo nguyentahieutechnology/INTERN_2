@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}Nhập kho từ Excel{% endblock %}
+
+{% block content %}
+<h3 class="mb-3"><i class="bi bi-box-seam"></i> Khu vực Thủ kho</h3>
+{% include 'core/thu_kho/_nav.html' %}
+
+<a href="{% url 'thu_kho_dashboard' %}" class="small text-muted">&larr; Về kho &amp; hàng chờ</a>
+
+<div class="row g-3 mt-1">
+    <div class="col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white"><strong><i class="bi bi-file-earmark-excel text-success"></i> Nhập kho hàng loạt từ Excel</strong></div>
+            <div class="card-body">
+                <form method="post" action="{% url 'thu_kho_nhap_excel' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Chọn file Excel (.xlsx)</label>
+                        <input type="file" name="file" class="form-control" accept=".xlsx" required>
+                    </div>
+                    <button class="btn btn-outline-primary"><i class="bi bi-upload"></i> Tải lên &amp; nhập kho</button>
+                    <a href="{% url 'thu_kho_excel_mau' %}" class="btn btn-outline-success">
+                        <i class="bi bi-download"></i> Tải file mẫu
+                    </a>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white"><strong><i class="bi bi-info-circle"></i> Hướng dẫn</strong></div>
+            <div class="card-body small">
+                File Excel cần các cột theo đúng thứ tự (dòng 1 là tiêu đề):
+                <table class="table table-sm table-bordered mt-2 mb-2">
+                    <thead class="table-light"><tr><th>Tên vắc-xin</th><th>Số lô</th><th>Ngày sản xuất</th><th>Ngày nhập</th><th>Hạn sử dụng</th><th>Số lượng</th></tr></thead>
+                    <tbody><tr><td>Vaxigrip Tetra</td><td>LO-001</td><td>2026-01-01</td><td>2026-06-01</td><td>2027-06-01</td><td>100</td></tr></tbody>
+                </table>
+                <ul class="mb-0 ps-3">
+                    <li><strong>Tên vắc-xin</strong> phải trùng với vắc-xin đã có trong hệ thống.</li>
+                    <li>Ngày dạng <code>YYYY-MM-DD</code> hoặc ô ngày của Excel. <strong>Ngày sản xuất</strong> có thể để trống.</li>
+                    <li>HSD phải đạt quy định (≥ 50% tổng hạn dùng tính từ ngày nhập).</li>
+                    <li>Dòng lỗi sẽ được bỏ qua và liệt kê bên dưới sau khi nhập.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if ket_qua %}
+<div class="card shadow-sm mt-3">
+    <div class="card-header bg-white"><strong>Kết quả nhập</strong></div>
+    <div class="card-body">
+        <p class="mb-2"><span class="badge text-bg-success">Thành công: {{ ket_qua.thanh_cong }}</span>
+            <span class="badge text-bg-danger">Lỗi/bỏ qua: {{ ket_qua.loi|length }}</span></p>
+        {% if ket_qua.loi %}
+        <ul class="mb-0 small text-danger">
+            {% for l in ket_qua.loi %}<li>{{ l }}</li>{% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}

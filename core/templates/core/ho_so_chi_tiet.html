@@ -1,0 +1,225 @@
+{% extends 'base.html' %}
+{% block title %}Hồ sơ - {{ kh.ho_ten }}{% endblock %}
+
+{% block content %}
+<a href="{% url 'ca_nhan' %}" class="small text-muted">&larr; Về danh sách hồ sơ</a>
+<div class="d-flex justify-content-between align-items-center mb-3 mt-1">
+    <h3 class="mb-0"><i class="bi bi-person-circle"></i> {{ kh.ho_ten }}
+        <span class="badge text-bg-secondary align-middle">{{ kh.get_quan_he_display }}</span></h3>
+    <a href="{% url 'dat_lich' %}" class="btn btn-outline-primary"><i class="bi bi-calendar-plus"></i> Đặt lịch hẹn</a>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="text-primary">Thông tin</h6>
+                <p class="mb-1"><strong>Họ tên:</strong> {{ kh.ho_ten }}</p>
+                <p class="mb-1"><strong>Ngày sinh:</strong> {{ kh.ngay_sinh|date:"d/m/Y" }}</p>
+                <p class="mb-1"><strong>Giới tính:</strong> {{ kh.gioi_tinh }}</p>
+                <p class="mb-1"><strong>Điện thoại:</strong> {{ kh.so_dien_thoai }}</p>
+                <p class="mb-1"><strong>CCCD/CMND:</strong> {{ kh.cccd|default:"—" }}</p>
+                <p class="mb-3"><strong>Địa chỉ:</strong> {{ kh.dia_chi|default:"—" }}</p>
+                <div class="text-center mb-3">
+                    <div id="qrcode" class="d-inline-block p-2 bg-white border"></div>
+                    <div class="small text-muted mt-1">Mã QR hồ sơ</div>
+                </div>
+                <a href="{% url 'khach_sua_ho_so' kh.id %}" class="btn btn-sm btn-outline-primary w-100">
+                    <i class="bi bi-pencil-square"></i> Cập nhật thông tin
+                </a>
+            </div>
+        </div>
+        {% if ngay_nhac %}
+        <div class="alert alert-warning mt-3 mb-0 shadow-sm">
+            <i class="bi bi-bell-fill"></i> <strong>Nhắc lịch:</strong> mũi tiêm tiếp theo dự kiến
+            <strong>{{ ngay_nhac|date:"d/m/Y" }}</strong>.
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <strong>Sổ tiêm điện tử</strong>
+                {% if mui_list %}
+                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalSoTiem">
+                    <i class="bi bi-journal-medical"></i> Xem sổ tiêm
+                </button>
+                {% endif %}
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light"><tr><th>Mũi</th><th>Vắc-xin</th><th>Ngày tiêm</th><th>Mũi kế tiếp</th><th>Phiếu</th></tr></thead>
+                    <tbody>
+                        {% for m in mui_list %}
+                        <tr><td>Mũi {{ m.mui_so }}</td><td>{{ m.vac_xin.ten }}</td>
+                            <td>{{ m.ngay_tiem|date:"d/m/Y" }}</td><td>{{ m.ngay_hen_mui_ke|date:"d/m/Y"|default:"-" }}</td>
+                            <td><button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
+                                    data-bs-target="#modalPhieuTiem" data-pdf="{% url 'phieu_tiem_xem' m.id %}">
+                                <i class="bi bi-clipboard2-check"></i> Phiếu tiêm</button></td></tr>
+                        {% empty %}
+                        <tr><td colspan="5" class="text-center text-muted py-4">Chưa có mũi tiêm nào.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm mt-3">
+    <div class="card-header bg-white"><strong>Lịch hẹn</strong></div>
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light"><tr><th>Ngày hẹn</th><th>Giờ</th><th>Gói tiêm</th><th>Ghi chú</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
+            <tbody>
+                {% for lh in lich_hen_list %}
+                <tr>
+                    <td>{{ lh.ngay_hen|date:"d/m/Y" }}</td><td>{{ lh.gio_hen|time:"H:i"|default:"-" }}</td>
+                    <td>{{ lh.phac_do.ten|default:"-" }}</td><td>{{ lh.ghi_chu|default:"-" }}</td>
+                    <td>
+                        {% if lh.trang_thai == 'cho' %}<span class="badge text-bg-secondary">Chờ xác nhận</span>
+                        {% elif lh.trang_thai == 'xacnhan' %}<span class="badge text-bg-info">Đã xác nhận</span>
+                        {% elif lh.trang_thai == 'datiem' %}<span class="badge text-bg-success">Đã tiêm</span>
+                        {% else %}<span class="badge text-bg-danger">Đã hủy</span>{% endif %}
+                    </td>
+                    <td>
+                        {% if lh.trang_thai == 'cho' or lh.trang_thai == 'xacnhan' %}
+                        <form method="post" action="{% url 'khach_huy_lich' lh.id %}" class="d-inline">{% csrf_token %}
+                            <button class="btn btn-sm btn-outline-danger"
+                                    onclick="return confirm('Hủy lịch hẹn ngày {{ lh.ngay_hen|date:'d/m/Y' }}?')">
+                                <i class="bi bi-x-circle"></i> Hủy
+                            </button>
+                        </form>
+                        {% else %}<span class="text-muted small">—</span>{% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6" class="text-center text-muted py-4">Chưa có lịch hẹn nào. <a href="{% url 'dat_lich' %}">Đặt lịch ngay</a>.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card shadow-sm mt-3">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <strong><i class="bi bi-clipboard2-heart"></i> Theo dõi sau tiêm</strong>
+        {% if co_mui_tiem %}
+        <a href="{% url 'theo_doi_sau_tiem' %}" class="btn btn-sm btn-outline-primary"><i class="bi bi-plus-circle"></i> Ghi nhận theo dõi</a>
+        {% endif %}
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light"><tr><th>Ngày ghi</th><th>Mũi tiêm</th><th>Thời điểm</th><th>Nhiệt độ</th><th>Triệu chứng</th><th>Mức độ</th></tr></thead>
+            <tbody>
+                {% for td in theo_doi_list %}
+                <tr>
+                    <td>{{ td.ngay_ghi_nhan|date:"d/m/Y H:i" }}</td>
+                    <td>{{ td.mui_tiem.vac_xin.ten }} (mũi {{ td.mui_tiem.mui_so }})</td>
+                    <td>{{ td.get_thoi_diem_display }}</td>
+                    <td>{{ td.nhiet_do|default:"-" }}{% if td.nhiet_do %}°C{% endif %}</td>
+                    <td>{{ td.trieu_chung|default:"-" }}</td>
+                    <td>
+                        {% if td.muc_do == 'binh_thuong' %}<span class="badge text-bg-success">Bình thường</span>
+                        {% elif td.muc_do == 'nhe' %}<span class="badge text-bg-info">Phản ứng nhẹ</span>
+                        {% elif td.muc_do == 'can_chu_y' %}<span class="badge text-bg-warning text-dark">Cần chú ý</span>
+                        {% else %}<span class="badge text-bg-danger">Nghiêm trọng</span>{% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6" class="text-center text-muted py-4">
+                    {% if co_mui_tiem %}Chưa có ghi nhận. <a href="{% url 'theo_doi_sau_tiem' %}">Ghi nhận ngay</a>.
+                    {% else %}Chưa có mũi tiêm nào để theo dõi.{% endif %}
+                </td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% if mui_list %}
+<!-- Modal xem so tiem (bang HTML) -->
+<div class="modal fade" id="modalSoTiem" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title mb-0"><i class="bi bi-journal-medical text-primary"></i> Sổ tiêm chủng — {{ kh.ho_ten }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body">
+                <p class="small text-muted mb-2">
+                    Ngày sinh: {{ kh.ngay_sinh|date:"d/m/Y" }} · Giới tính: {{ kh.gioi_tinh }} · ĐT: {{ kh.so_dien_thoai }}
+                </p>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr><th>Mũi</th><th>Vắc-xin</th><th>Phòng bệnh</th><th>Ngày tiêm</th><th>Số lô</th><th>Người tiêm</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for m in mui_list %}
+                            <tr>
+                                <td>{{ m.mui_so }}</td>
+                                <td class="fw-semibold">{{ m.vac_xin.ten }}</td>
+                                <td>{{ m.vac_xin.phong_benh }}</td>
+                                <td>{{ m.ngay_tiem|date:"d/m/Y" }}</td>
+                                <td>{{ m.lo.so_lo|default:"-" }}</td>
+                                <td>{% if m.nguoi_tiem %}{{ m.nguoi_tiem.get_full_name|default:m.nguoi_tiem.username }}{% else %}-{% endif %}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <span class="me-auto small text-muted">Tổng: {{ mui_list|length }} mũi</span>
+                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal xem truoc phieu tiem (PDF) -->
+<div class="modal fade" id="modalPhieuTiem" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title mb-0"><i class="bi bi-clipboard2-check text-primary"></i> Phiếu tiêm</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body p-0">
+                <iframe id="phieuTiemFrame" title="Xem trước phiếu tiêm" style="width:100%; height:75vh; border:0;"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+(function () {
+    // Tao ma QR cho ho so
+    var qrContainer = document.getElementById("qrcode");
+    if (qrContainer) {
+        // Lay URL chung nhan cong khai
+        var certUrl = window.location.origin + "{% url 'chung_nhan_tiem' kh.id %}";
+        new QRCode(qrContainer, {
+            text: certUrl,
+            width: 120,
+            height: 120,
+            colorDark : "#000000",
+            colorLight : "#ffffff",
+            correctLevel : QRCode.CorrectLevel.H
+        });
+    }
+
+    var m = document.getElementById('modalPhieuTiem');
+    if (!m) return;
+    var frame = document.getElementById('phieuTiemFrame');
+    m.addEventListener('show.bs.modal', function (e) {
+        var btn = e.relatedTarget;
+        if (btn) frame.src = btn.getAttribute('data-pdf');
+    });
+    m.addEventListener('hidden.bs.modal', function () { frame.removeAttribute('src'); });
+})();
+</script>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Phiếu xác nhận tiêm chủng</title>
+<style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #e9ecef; font-family: "Segoe UI", Arial, sans-serif;
+           color: #212529; font-size: 14px; }
+    .thanh-cong-cu { text-align: right; padding: 10px 14px; background: #fff; border-bottom: 1px solid #dee2e6; }
+    .btn-in { border: 1px solid #0d6efd; background: #0d6efd; color: #fff; border-radius: 6px;
+              padding: 6px 16px; font-size: 14px; cursor: pointer; }
+    .btn-in:hover { background: #0b5ed7; }
+    .to { background: #fff; max-width: 600px; margin: 18px auto; padding: 28px 34px;
+          box-shadow: 0 2px 10px rgba(0,0,0,.12); }
+    .clinic { font-size: 13px; font-weight: 600; margin: 0; }
+    h1 { text-align: center; font-size: 19px; margin: 10px 0 18px; }
+    .tt p { margin: 3px 0; }
+    table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+    th, td { border: 1px solid #adb5bd; padding: 6px 9px; text-align: left; vertical-align: middle; }
+    th { background: #f1f5f9; font-weight: 600; width: 38%; }
+    .muc { color: #0d6efd; font-weight: 600; margin: 14px 0 4px; }
+    ul { margin: 4px 0; padding-left: 20px; }
+    .trong { color: #6c757d; }
+    .ky { margin-top: 26px; display: flex; gap: 16px; }
+    .ky .cot { flex: 1; text-align: center; }
+    .ky .vai { font-weight: 600; }
+    .ky .it { font-size: 12px; color: #6c757d; }
+    .ky .ten { margin-top: 46px; font-weight: 600; }
+    @media print {
+        body { background: #fff; }
+        .thanh-cong-cu { display: none; }
+        .to { box-shadow: none; margin: 0; max-width: none; }
+    }
+</style>
+</head>
+<body>
+<div class="thanh-cong-cu">
+    <button class="btn-in" onclick="window.print()">🖨 In phiếu</button>
+</div>
+
+<div class="to">
+    <p class="clinic">PHÒNG KHÁM TIÊM CHỦNG AN TÂM</p>
+    <h1>PHIẾU XÁC NHẬN TIÊM CHỦNG</h1>
+
+    <div class="tt">
+        <p>Họ và tên: <strong>{{ kh.ho_ten }}</strong></p>
+        <p>Ngày sinh: {{ kh.ngay_sinh|date:"d/m/Y" }} &nbsp; - &nbsp; Giới tính: {{ kh.gioi_tinh }}</p>
+    </div>
+
+    <table>
+        <tr><th>Vắc-xin</th><td>{{ mt.vac_xin.ten }} (phòng {{ mt.vac_xin.phong_benh }})</td></tr>
+        <tr><th>Mũi số</th><td>{{ mt.mui_so }}</td></tr>
+        <tr><th>Ngày tiêm</th><td>{{ mt.ngay_tiem|date:"d/m/Y" }}</td></tr>
+        <tr><th>Số lô (HSD)</th><td>{% if mt.lo %}{{ mt.lo.so_lo }} (HSD {{ mt.lo.han_su_dung|date:"d/m/Y" }}){% else %}—{% endif %}</td></tr>
+        <tr><th>Vị trí tiêm</th><td>{{ mt.vi_tri_tiem|default:"—" }}</td></tr>
+        <tr><th>Người tiêm</th><td>{% if mt.nguoi_tiem %}{{ mt.nguoi_tiem.get_full_name|default:mt.nguoi_tiem.username }}{% else %}—{% endif %}</td></tr>
+        <tr><th>Hẹn mũi kế tiếp</th><td>{{ mt.ngay_hen_mui_ke|date:"d/m/Y"|default:"—" }}</td></tr>
+    </table>
+
+    <div class="muc">Theo dõi sau tiêm</div>
+    <ul>
+        {% for td in theo_doi %}
+        <li>{{ td.get_thoi_diem_display }}: {{ td.get_muc_do_display }}{% if td.nhiet_do %} (nhiệt độ {{ td.nhiet_do }}°C){% endif %}{% if td.trieu_chung %} — {{ td.trieu_chung }}{% endif %}</li>
+        {% empty %}<li class="trong">Chưa ghi nhận theo dõi.</li>{% endfor %}
+    </ul>
+
+    <div class="ky">
+        <div class="cot">
+            <div class="vai">Bác sĩ</div>
+            <div class="it">(ký, ghi rõ họ tên)</div>
+            <div class="ten">{% if bac_si %}{{ bac_si.get_full_name|default:bac_si.username }}{% else %}&nbsp;{% endif %}</div>
+        </div>
+        <div class="cot">
+            <div class="vai">Người tiêm</div>
+            <div class="it">(ký, ghi rõ họ tên)</div>
+            <div class="ten">{% if mt.nguoi_tiem %}{{ mt.nguoi_tiem.get_full_name|default:mt.nguoi_tiem.username }}{% else %}&nbsp;{% endif %}</div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

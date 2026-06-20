@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% block title %}Hủy vắc-xin{% endblock %}
+
+{% block content %}
+<h3 class="mb-3"><i class="bi bi-box-seam"></i> Khu vực Thủ kho</h3>
+{% include 'core/thu_kho/_nav.html' %}
+
+<style>
+    .cb-item { cursor: pointer; }
+    .cb-chevron { transition: transform .2s; }
+    .cb-toggle[aria-expanded="false"] .cb-chevron { transform: rotate(-90deg); }
+    #card-huy.flash { animation: flashbg 1.1s ease-out; }
+    @keyframes flashbg { from { background: #fff3cd; } to { background: transparent; } }
+</style>
+
+{% if canh_bao_los %}
+<div class="alert alert-warning shadow-sm">
+    <div class="d-flex align-items-center gap-2 cb-toggle" role="button"
+         data-bs-toggle="collapse" data-bs-target="#dsCanhBao"
+         aria-expanded="true" aria-controls="dsCanhBao" style="cursor:pointer">
+        <i class="bi bi-bell-fill"></i>
+        <strong>Có {{ canh_bao_los.count }} lô cần xử lý (đã/sắp hết hạn).</strong>
+        <i class="bi bi-chevron-down ms-auto cb-chevron"></i>
+    </div>
+    <div class="collapse show mt-2" id="dsCanhBao">
+        <div class="list-group">
+            {% for lo in canh_bao_los %}
+            <button type="button" class="list-group-item list-group-item-action cb-item d-flex justify-content-between align-items-center py-2"
+                    data-lo="{{ lo.id }}" data-ton="{{ lo.so_luong_ton }}"
+                    data-hethan="{% if lo.han_su_dung < today %}1{% else %}0{% endif %}">
+                <span><i class="bi bi-capsule"></i> <strong>{{ lo.vac_xin.ten }}</strong> — lô {{ lo.so_lo }} · tồn {{ lo.so_luong_ton }}</span>
+                <span>HSD {{ lo.han_su_dung|date:"d/m/Y" }}
+                    {% if lo.han_su_dung < today %}<span class="badge text-bg-dark ms-1">Đã hết hạn</span>
+                    {% else %}<span class="badge text-bg-warning text-dark ms-1">Còn {{ lo.han_su_dung|timeuntil }}</span>{% endif %}
+                </span>
+            </button>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="row g-3">
+    <div class="col-lg-5">
+        <div class="card shadow-sm" id="card-huy">
+            <div class="card-header bg-danger text-white"><strong><i class="bi bi-trash"></i> Hủy vắc-xin</strong></div>
+            <div class="card-body">
+                {% if loi %}<div class="alert alert-danger py-2 small">{{ loi }}</div>{% endif %}
+                <form method="post" action="{% url 'thu_kho_huy' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Lô vắc-xin</label>
+                        <select name="lo" class="form-select" required>
+                            <option value="">-- Chọn lô cần hủy --</option>
+                            {% for lo in los %}
+                            <option value="{{ lo.id }}">
+                                {{ lo.vac_xin.ten }} — lô {{ lo.so_lo }} — tồn {{ lo.so_luong_ton }} — HSD {{ lo.han_su_dung|date:"d/m/Y" }}{% if lo.han_su_dung < today %} (ĐÃ HẾT HẠN){% endif %}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Số lượng hủy</label>
+                        <input type="number" name="so_luong" class="form-control" min="1" value="1" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Lý do</label>
+                        <select name="ly_do" class="form-select">
+                            {% for ma, ten in ly_do_choices %}<option value="{{ ma }}">{{ ten }}</option>{% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Ghi chú</label>
+                        <input type="text" name="ghi_chu" class="form-control" placeholder="Mô tả thêm (tùy chọn)">
+                    </div>
+                    <button class="btn btn-outline-danger w-100"
+                            onclick="return confirm('Xác nhận hủy số lượng vắc-xin này? Thao tác sẽ trừ tồn kho.')">
+                        <i class="bi bi-trash"></i> Xác nhận hủy
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-7">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white"><strong>Lịch sử hủy</strong></div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr><th>Thời gian</th><th>Vắc-xin</th><th>Lô</th><th>SL</th><th>Lý do</th><th>Người hủy</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for p in lich_su %}
+                        <tr>
+                            <td>{{ p.ngay_huy|date:"d/m/Y H:i" }}</td>
+                            <td>{{ p.lo.vac_xin.ten }}</td>
+                            <td>{{ p.lo.so_lo }}</td>
+                            <td class="text-danger fw-bold">-{{ p.so_luong }}</td>
+                            <td><span class="badge text-bg-secondary">{{ p.get_ly_do_display }}</span></td>
+                            <td>{{ p.nguoi_huy.get_full_name|default:p.nguoi_huy.username|default:"-" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="6" class="text-center text-muted py-4">Chưa có lần hủy nào.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+    var card = document.getElementById('card-huy');
+    if (!card) return;
+    var selLo = card.querySelector('select[name=lo]');
+    var inpSL = card.querySelector('input[name=so_luong]');
+    var selLyDo = card.querySelector('select[name=ly_do]');
+
+    document.querySelectorAll('.cb-item').forEach(function (b) {
+        b.addEventListener('click', function () {
+            selLo.value = b.dataset.lo;                 // chon lo
+            inpSL.value = b.dataset.ton;                // so luong = ton hien co
+            if (b.dataset.hethan === '1' && selLyDo) {
+                selLyDo.value = 'het_han';              // da het han -> ly do het han
+            }
+            card.classList.remove('flash');
+            void card.offsetWidth;                      // reset animation
+            card.classList.add('flash');
+            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            inpSL.focus();
+            inpSL.select();
+        });
+    });
+})();
+</script>
+{% endblock %}

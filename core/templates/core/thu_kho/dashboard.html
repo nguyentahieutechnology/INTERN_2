@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+{% block title %}Thủ kho{% endblock %}
+
+{% block content %}
+<h3 class="mb-3"><i class="bi bi-box-seam"></i> Khu vực Thủ kho</h3>
+{% include 'core/thu_kho/_nav.html' %}
+
+<style>
+    .kho-card { opacity: .72; cursor: pointer; transition: opacity .15s, transform .15s; }
+    .kho-card:hover { opacity: .9; }
+    .kho-card.active { opacity: 1; transform: translateY(-3px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.25) !important; }
+</style>
+
+<p class="small text-muted mb-2"><i class="bi bi-hand-index"></i> Bấm vào từng ô để xem chi tiết.</p>
+<div class="row g-3 mb-3">
+    <div class="col-md-4">
+        <div class="card text-bg-primary shadow-sm kho-card active" data-target="p-choxuat" role="button">
+            <div class="card-body"><h6><i class="bi bi-box-arrow-up"></i> Chờ xuất kho</h6>
+                <p class="display-6 mb-0">{{ cho_xuat.count }}</p></div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-bg-warning shadow-sm kho-card" data-target="p-saphethan" role="button">
+            <div class="card-body"><h6><i class="bi bi-calendar-x"></i> Lô sắp hết hạn</h6>
+                <p class="display-6 mb-0">{{ sap_het_han.count }}</p></div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-bg-danger shadow-sm kho-card" data-target="p-tonthap" role="button">
+            <div class="card-body"><h6><i class="bi bi-exclamation-octagon"></i> Lô tồn thấp (&lt;20)</h6>
+                <p class="display-6 mb-0">{{ ton_thap.count }}</p></div>
+        </div>
+    </div>
+</div>
+
+<!-- Panel: Cho xuat kho -->
+<div class="card shadow-sm mb-3 kho-panel" id="p-choxuat">
+    <div class="card-header bg-white"><strong><i class="bi bi-box-arrow-up text-primary"></i> Đơn chờ xuất kho ({{ cho_xuat.count }})</strong></div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light"><tr><th>Khách hàng</th><th>Vắc-xin</th><th>Ngày hẹn</th><th></th></tr></thead>
+            <tbody>
+                {% for qt in cho_xuat %}
+                <tr>
+                    <td class="fw-semibold">{{ qt.lich_hen.khach_hang.ho_ten }}</td>
+                    <td>{{ qt.vac_xin.ten }}</td>
+                    <td>{{ qt.lich_hen.ngay_hen|date:"d/m/Y" }}</td>
+                    <td><a href="{% url 'quy_trinh_chi_tiet' qt.id %}" class="btn btn-sm btn-outline-primary">Xuất kho</a></td>
+                </tr>
+                {% empty %}<tr><td colspan="4" class="text-center text-muted py-3">Không có đơn chờ xuất kho.</td></tr>{% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Panel: Lo sap het han -->
+<div class="card shadow-sm mb-3 kho-panel d-none" id="p-saphethan">
+    <div class="card-header bg-white"><strong><i class="bi bi-calendar-x text-warning"></i> Lô sắp hết hạn (trong 60 ngày) ({{ sap_het_han.count }})</strong></div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light"><tr><th>Vắc-xin</th><th>Số lô</th><th>Tồn</th><th>Hạn dùng</th><th>Tình trạng</th></tr></thead>
+            <tbody>
+                {% for lo in sap_het_han %}
+                <tr>
+                    <td class="fw-semibold">{{ lo.vac_xin.ten }}</td>
+                    <td>{{ lo.so_lo }}</td>
+                    <td>{{ lo.so_luong_ton }}</td>
+                    <td>{{ lo.han_su_dung|date:"d/m/Y" }}</td>
+                    <td>{% if lo.han_su_dung <= today %}<span class="badge text-bg-dark">Đã hết hạn</span>
+                        {% else %}<span class="badge text-bg-warning text-dark">Còn {{ lo.han_su_dung|timeuntil }}</span>{% endif %}</td>
+                </tr>
+                {% empty %}<tr><td colspan="5" class="text-center text-muted py-3">Không có lô nào sắp hết hạn.</td></tr>{% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Panel: Lo ton thap -->
+<div class="card shadow-sm mb-3 kho-panel d-none" id="p-tonthap">
+    <div class="card-header bg-white"><strong><i class="bi bi-exclamation-octagon text-danger"></i> Lô tồn thấp dưới 20 liều ({{ ton_thap.count }})</strong></div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light"><tr><th>Vắc-xin</th><th>Số lô</th><th>Tồn</th><th>Hạn dùng</th></tr></thead>
+            <tbody>
+                {% for lo in ton_thap %}
+                <tr>
+                    <td class="fw-semibold">{{ lo.vac_xin.ten }}</td>
+                    <td>{{ lo.so_lo }}</td>
+                    <td><span class="badge text-bg-danger">{{ lo.so_luong_ton }}</span></td>
+                    <td>{{ lo.han_su_dung|date:"d/m/Y" }}</td>
+                </tr>
+                {% empty %}<tr><td colspan="4" class="text-center text-muted py-3">Không có lô nào tồn thấp.</td></tr>{% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <strong>Tồn kho vắc-xin</strong>
+        <div class="d-flex gap-2">
+            <a href="{% url 'thu_kho_nhap_excel' %}" class="btn btn-sm btn-outline-success">
+                <i class="bi bi-file-earmark-excel"></i> Nhập từ Excel
+            </a>
+            <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#formNhapLo">
+                <i class="bi bi-plus-circle"></i> Nhập lô mới
+            </button>
+        </div>
+    </div>
+    <div class="collapse {% if form.errors %}show{% endif %}" id="formNhapLo">
+        <div class="card-body bg-light border-bottom">
+            <form method="post" action="{% url 'thu_kho_dashboard' %}">{% csrf_token %}
+                <div class="row g-2">
+                    <div class="col-md-4">{% include 'core/_field.html' with field=form.vac_xin %}</div>
+                    <div class="col-md-3">{% include 'core/_field.html' with field=form.so_lo %}</div>
+                    <div class="col-md-2">{% include 'core/_field.html' with field=form.so_luong_ton %}</div>
+                    <div class="col-md-3">{% include 'core/_field.html' with field=form.ngay_san_xuat %}</div>
+                    <div class="col-md-3">{% include 'core/_field.html' with field=form.ngay_nhap %}</div>
+                    <div class="col-md-3">{% include 'core/_field.html' with field=form.han_su_dung %}</div>
+                </div>
+                <p class="small text-muted mb-2"><i class="bi bi-info-circle"></i>
+                    Quy định: HSD còn lại (từ ngày nhập) phải ≥ 50% tổng hạn dùng của vắc-xin, nếu không sẽ không cho nhập.</p>
+                <button class="btn btn-outline-primary btn-sm"><i class="bi bi-box-arrow-in-down"></i> Lưu lô</button>
+            </form>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light"><tr><th>Vắc-xin</th><th>Số lô</th><th>Tồn</th><th>Ngày sản xuất</th><th>Hạn dùng</th><th>Trạng thái</th></tr></thead>
+            <tbody>
+                {% for lo in los %}
+                <tr>
+                    <td>{{ lo.vac_xin.ten }}</td>
+                    <td>{{ lo.so_lo }}</td>
+                    <td>{{ lo.so_luong_ton }}</td>
+                    <td>{{ lo.ngay_san_xuat|date:"d/m/Y"|default:"—" }}</td>
+                    <td>{{ lo.han_su_dung|date:"d/m/Y" }}</td>
+                    <td>
+                        {% if lo.han_su_dung <= today %}<span class="badge text-bg-dark">Hết hạn</span>
+                        {% elif lo.han_su_dung <= han_canh_bao %}<span class="badge text-bg-warning text-dark">Sắp hết hạn</span>
+                        {% elif lo.so_luong_ton < 20 %}<span class="badge text-bg-danger">Tồn thấp</span>
+                        {% else %}<span class="badge text-bg-success">Bình thường</span>{% endif %}
+                    </td>
+                </tr>
+                {% empty %}<tr><td colspan="6" class="text-center text-muted py-3">Chưa có lô nào.</td></tr>{% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+    var cards = document.querySelectorAll('.kho-card');
+    var panels = document.querySelectorAll('.kho-panel');
+    function chon(id) {
+        cards.forEach(function (c) { c.classList.toggle('active', c.dataset.target === id); });
+        panels.forEach(function (p) { p.classList.toggle('d-none', p.id !== id); });
+    }
+    cards.forEach(function (c) {
+        c.addEventListener('click', function () { chon(c.dataset.target); });
+    });
+})();
+</script>
+{% endblock %}

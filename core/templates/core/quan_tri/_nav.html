@@ -1,0 +1,22 @@
+<ul class="nav nav-pills mb-3">
+    <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name == 'quan_tri_tai_khoan' %}active{% endif %}"
+           href="{% url 'quan_tri_tai_khoan' %}"><i class="bi bi-person-badge"></i> Tài khoản &amp; phân quyền</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name == 'quan_tri_vac_xin' %}active{% endif %}"
+           href="{% url 'quan_tri_vac_xin' %}"><i class="bi bi-capsule"></i> Vắc-xin</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name == 'quan_tri_phac_do' or request.resolver_match.url_name == 'quan_tri_phac_do_sua' %}active{% endif %}"
+           href="{% url 'quan_tri_phac_do' %}"><i class="bi bi-list-check"></i> Phác đồ</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name == 'quan_tri_yeu_cau_mat_khau' %}active{% endif %}"
+           href="{% url 'quan_tri_yeu_cau_mat_khau' %}"><i class="bi bi-key"></i> Yêu cầu đổi MK{% if so_yc_mat_khau %} <span class="badge text-bg-danger">{{ so_yc_mat_khau }}</span>{% endif %}</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name == 'quan_tri_lich_su' %}active{% endif %}"
+           href="{% url 'quan_tri_lich_su' %}"><i class="bi bi-clock-history"></i> Lịch sử chỉnh sửa</a>
+    </li>
+</ul>

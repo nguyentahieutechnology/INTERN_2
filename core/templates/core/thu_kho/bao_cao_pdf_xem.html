@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}Xem trước báo cáo PDF{% endblock %}
+
+{% block content %}
+<h3 class="mb-3"><i class="bi bi-box-seam"></i> Khu vực Thủ kho</h3>
+{% include 'core/thu_kho/_nav.html' %}
+
+<div class="d-flex justify-content-between align-items-center mb-2">
+    <a href="{% url 'thu_kho_bao_cao' %}" class="small text-muted">&larr; Về báo cáo</a>
+    <a href="{% url 'thu_kho_bao_cao_pdf' %}?tai=1" class="btn btn-sm btn-outline-danger">
+        <i class="bi bi-download"></i> Tải xuống PDF
+    </a>
+</div>
+
+<div class="card shadow-sm">
+    <iframe src="{% url 'thu_kho_bao_cao_pdf' %}" title="Xem trước báo cáo"
+            style="width:100%; height:80vh; border:0;"></iframe>
+</div>
+{% endblock %}

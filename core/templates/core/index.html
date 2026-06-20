@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Trang chủ - Phòng khám Tiêm chủng{% endblock %}
+
+{% block content %}
+<!-- ===== Banner truot (carousel) =====
+     THEM SLIDE MOI: copy mot khoi <div class="carousel-item">...</div> ben duoi,
+     va them 1 nut cham trong .carousel-indicators voi data-bs-slide-to tang dan. -->
+<div id="bannerCarousel" class="carousel slide shadow-sm rounded-3 overflow-hidden mb-4"
+     data-bs-ride="carousel" data-bs-interval="4000">
+
+    <div class="carousel-indicators">
+        <button type="button" data-bs-target="#bannerCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+        <button type="button" data-bs-target="#bannerCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+        <button type="button" data-bs-target="#bannerCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+    </div>
+
+    <div class="carousel-inner">
+        <!-- Slide 1 -->
+        <div class="carousel-item active">
+            <div class="p-5 bg-primary text-white text-center" style="min-height:340px">
+                <div class="container-fluid py-4">
+                    <span class="bg-white rounded-circle d-inline-flex p-3 shadow-sm">
+                        <img src="{% static 'core/logo.svg' %}" alt="Logo" width="56" height="56">
+                    </span>
+                    <h1 class="display-5 fw-bold mt-2">Phòng khám Tiêm chủng An Tâm</h1>
+                    <p class="fs-5 col-md-9 mx-auto">
+                        Đặt lịch, khám sàng lọc, theo dõi lịch sử tiêm và tự động nhắc mũi tiếp theo.
+                    </p>
+                    {% if not user.is_authenticated %}
+                    <a href="{% url 'dang_ky' %}" class="btn btn-light btn-lg mt-2"><i class="bi bi-person-plus"></i> Đăng ký</a>
+                    <a href="{% url 'dang_nhap' %}" class="btn btn-outline-light btn-lg mt-2"><i class="bi bi-box-arrow-in-right"></i> Đăng nhập</a>
+                    {% else %}
+                    <a href="{% url 'dashboard' %}" class="btn btn-light btn-lg mt-2"><i class="bi bi-speedometer2"></i> Vào bảng điều khiển</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2 (mau - sua noi dung tai day) -->
+        <div class="carousel-item">
+            <div class="p-5 bg-success text-white text-center" style="min-height:340px">
+                <div class="container-fluid py-4">
+                    <i class="bi bi-shield-check" style="font-size:3rem"></i>
+                    <h1 class="display-6 fw-bold mt-2">Tiêm chủng đầy đủ — Bảo vệ cả gia đình</h1>
+                    <p class="fs-5 col-md-9 mx-auto">
+                        Đa dạng vắc-xin cho trẻ em và người lớn, nguồn gốc rõ ràng, bảo quản đạt chuẩn.
+                    </p>
+                    <a href="{% url 'dat_lich' %}" class="btn btn-light btn-lg mt-2"><i class="bi bi-calendar-check"></i> Đặt lịch ngay</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3 (mau) -->
+        <div class="carousel-item">
+            <div class="p-5 text-white text-center" style="min-height:340px; background:#0d6efd;background:linear-gradient(135deg,#0d6efd,#0dcaf0)">
+                <div class="container-fluid py-4">
+                    <i class="bi bi-bell" style="font-size:3rem"></i>
+                    <h1 class="display-6 fw-bold mt-2">Không bao giờ quên mũi tiêm</h1>
+                    <p class="fs-5 col-md-9 mx-auto">
+                        Hệ thống tự động tính và nhắc ngày tiêm mũi tiếp theo theo đúng phác đồ.
+                    </p>
+                    <a href="{% url 'cam_nang' %}" class="btn btn-light btn-lg mt-2"><i class="bi bi-journal-text"></i> Xem cẩm nang</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button class="carousel-control-prev" type="button" data-bs-target="#bannerCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span><span class="visually-hidden">Trước</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#bannerCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span><span class="visually-hidden">Sau</span>
+    </button>
+</div>
+
+<!-- Tinh nang -->
+<h3 class="text-center mb-4">Dịch vụ &amp; Tính năng</h3>
+<div class="row g-3 mb-5">
+    <div class="col-md-3">
+        <a href="{% url 'dat_lich' %}" class="text-decoration-none text-reset">
+        <div class="card h-100 text-center shadow-sm border-0 border-primary border-2">
+            <div class="card-body">
+                <i class="bi bi-calendar-check text-primary" style="font-size:2.5rem"></i>
+                <h6 class="mt-2">Đặt lịch hẹn</h6>
+                <p class="small text-muted mb-0">Đăng ký lịch tiêm nhanh chóng, chủ động thời gian.</p>
+            </div>
+        </div>
+        </a>
+    </div>
+    <div class="col-md-3">
+        <div class="card h-100 text-center shadow-sm border-0">
+            <div class="card-body">
+                <i class="bi bi-clipboard2-pulse text-success" style="font-size:2.5rem"></i>
+                <h6 class="mt-2">Khám sàng lọc</h6>
+                <p class="small text-muted mb-0">Đánh giá đủ điều kiện trước khi tiêm, an toàn.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card h-100 text-center shadow-sm border-0">
+            <div class="card-body">
+                <i class="bi bi-journal-medical text-info" style="font-size:2.5rem"></i>
+                <h6 class="mt-2">Sổ tiêm điện tử</h6>
+                <p class="small text-muted mb-0">Lưu trữ lịch sử các mũi tiêm của từng khách hàng.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card h-100 text-center shadow-sm border-0">
+            <div class="card-body">
+                <i class="bi bi-bell text-warning" style="font-size:2.5rem"></i>
+                <h6 class="mt-2">Nhắc mũi tự động</h6>
+                <p class="small text-muted mb-0">Tự tính &amp; nhắc ngày tiêm mũi tiếp theo theo phác đồ.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Danh muc vac-xin -->
+<h3 class="text-center mb-1">Danh mục vắc-xin</h3>
+<p class="text-center text-muted mb-4">Hiện có {{ so_vacxin }} loại vắc-xin</p>
+<div class="row g-3">
+    {% for vx in danh_sach_vacxin %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h6 class="card-title text-primary">{{ vx.ten }}</h6>
+                <p class="small mb-1"><i class="bi bi-virus"></i> Phòng: {{ vx.phong_benh }}</p>
+                <p class="small text-muted mb-2">{{ vx.nha_san_xuat }} &mdash; {{ vx.nuoc_san_xuat }}</p>
+                <span class="badge text-bg-success">{{ vx.gia|floatformat:0 }} đ</span>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p class="text-center text-muted">Chưa có dữ liệu vắc-xin.</p>
+    {% endfor %}
+</div>
+{% endblock %}

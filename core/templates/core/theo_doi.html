@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Ghi nhận theo dõi sau tiêm{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-7 col-lg-6">
+        <div class="card shadow-sm mt-4">
+            <div class="card-body p-4">
+                <h4 class="mb-3"><i class="bi bi-clipboard2-heart text-primary"></i> Theo dõi sau tiêm</h4>
+
+                {% if not co_mui_tiem %}
+                <div class="alert alert-info">
+                    Bạn chưa có mũi tiêm nào để theo dõi. Hãy đặt lịch và hoàn tất tiêm chủng trước.
+                </div>
+                <a href="{% url 'ca_nhan' %}" class="btn btn-outline-secondary">&larr; Về hồ sơ</a>
+                {% else %}
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger py-2 small">{{ form.non_field_errors|striptags }}</div>
+                {% endif %}
+                <form method="post" action="{% url 'theo_doi_sau_tiem' %}">
+                    {% csrf_token %}
+                    {% include 'core/_field.html' with field=form.mui_tiem %}
+                    {% include 'core/_field.html' with field=form.thoi_diem %}
+                    {% include 'core/_field.html' with field=form.nhiet_do %}
+                    {% include 'core/_field.html' with field=form.trieu_chung %}
+                    {% include 'core/_field.html' with field=form.muc_do %}
+                    {% include 'core/_field.html' with field=form.ghi_chu %}
+                    <button type="submit" class="btn btn-outline-primary w-100">
+                        <i class="bi bi-check-circle"></i> Lưu ghi nhận
+                    </button>
+                </form>
+                <div class="text-center mt-3">
+                    <a href="{% url 'ca_nhan' %}" class="small text-muted">&larr; Về hồ sơ của tôi</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

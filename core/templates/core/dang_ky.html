@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Đăng ký tài khoản{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-sm mt-4">
+            <div class="card-body p-4">
+                <div class="text-center mb-3">
+                    <img src="{% static 'core/logo.svg' %}" alt="Logo" width="64" height="64">
+                    <h4 class="mt-2">Đăng ký tài khoản</h4>
+                    <p class="text-muted small mb-0">Tạo tài khoản mới để sử dụng hệ thống</p>
+                </div>
+
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger py-2 small">{{ form.non_field_errors|striptags }}</div>
+                {% endif %}
+
+                <form method="post" action="{% url 'dang_ky' %}">
+                    {% csrf_token %}
+                    {% for field in form %}
+                    <div class="mb-3">
+                        <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}
+                        <div class="form-text small">{{ field.help_text|safe }}</div>
+                        {% endif %}
+                        {% if field.errors %}
+                        <div class="text-danger small">{{ field.errors|striptags }}</div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-outline-primary w-100">
+                        <i class="bi bi-person-plus"></i> Đăng ký
+                    </button>
+                </form>
+
+                <div class="text-center mt-3">
+                    <span class="small text-muted">Đã có tài khoản?</span>
+                    <a href="{% url 'dang_nhap' %}" class="small">Đăng nhập</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .address-suggestions {
+        position: absolute;
+        z-index: 1000;
+        background: white;
+        width: 100%;
+        border: 1px solid #ddd;
+        border-top: none;
+        max-height: 200px;
+        overflow-y: auto;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        display: none;
+    }
+    .suggestion-item {
+        padding: 8px 12px;
+        cursor: pointer;
+        border-bottom: 1px solid #eee;
+        font-size: 0.9rem;
+    }
+    .suggestion-item:hover {
+        background-color: #f8f9fa;
+    }
+    .address-container {
+        position: relative;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Tìm ô input địa chỉ (trong form đăng ký có name="dia_chi")
+    const addressInput = document.querySelector('input[name="dia_chi"]');
+    if (!addressInput) return;
+
+    const container = document.createElement('div');
+    container.className = 'address-container';
+    addressInput.parentNode.insertBefore(container, addressInput);
+    container.appendChild(addressInput);
+
+    const suggestionBox = document.createElement('div');
+    suggestionBox.className = 'address-suggestions';
+    container.appendChild(suggestionBox);
+
+    let timeout = null;
+
+    addressInput.addEventListener('input', function() {
+        clearTimeout(timeout);
+        const query = this.value;
+        if (query.length < 3) {
+            suggestionBox.style.display = 'none';
+            return;
+        }
+
+        timeout = setTimeout(() => {
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&limit=5&countrycodes=vn`)
+                .then(response => response.json())
+                .then(data => {
+                    suggestionBox.innerHTML = '';
+                    if (data.length > 0) {
+                        data.forEach(item => {
+                            const div = document.createElement('div');
+                            div.className = 'suggestion-item';
+                            div.textContent = item.display_name;
+                            div.addEventListener('click', () => {
+                                addressInput.value = item.display_name;
+                                suggestionBox.style.display = 'none';
+                            });
+                            suggestionBox.appendChild(div);
+                        });
+                        suggestionBox.style.display = 'block';
+                    } else {
+                        suggestionBox.style.display = 'none';
+                    }
+                });
+        }, 500);
+    });
+
+    document.addEventListener('click', function(e) {
+        if (!container.contains(e.target)) {
+            suggestionBox.style.display = 'none';
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+{% block title %}Báo cáo kho{% endblock %}
+
+{% block content %}
+<h3 class="mb-3"><i class="bi bi-box-seam"></i> Khu vực Thủ kho</h3>
+{% include 'core/thu_kho/_nav.html' %}
+
+<style>
+    .kho-card { opacity: .72; cursor: pointer; transition: opacity .15s, transform .15s; }
+    .kho-card:hover { opacity: .9; }
+    .kho-card.active { opacity: 1; transform: translateY(-3px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.25) !important; }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-2">
+    <span class="small text-muted"><i class="bi bi-hand-index"></i> Bấm vào từng ô để xem chi tiết.</span>
+    <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modalPdf">
+        <i class="bi bi-file-earmark-pdf"></i> Xem trước &amp; xuất PDF
+    </button>
+</div>
+<div class="row g-3 mb-3">
+    <div class="col-md-4">
+        <div class="card text-bg-success shadow-sm kho-card active" data-target="p-ton" role="button">
+            <div class="card-body"><h6><i class="bi bi-boxes"></i> Tổng tồn kho</h6>
+                <p class="display-6 mb-0">{{ tong_ton }}</p></div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-bg-primary shadow-sm kho-card" data-target="p-xuat" role="button">
+            <div class="card-body"><h6><i class="bi bi-box-arrow-up"></i> Tổng đã xuất</h6>
+                <p class="display-6 mb-0">{{ tong_xuat }}</p></div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-bg-dark shadow-sm kho-card" data-target="p-hethan" role="button">
+            <div class="card-body"><h6><i class="bi bi-calendar-x"></i> Lô đã hết hạn</h6>
+                <p class="display-6 mb-0">{{ het_han.count }}</p></div>
+        </div>
+    </div>
+</div>
+
+<!-- Panel: Ton kho theo vac-xin (Xuat-Nhap-Ton) -->
+<div class="card shadow-sm mb-3 kho-panel" id="p-ton">
+    <div class="card-header bg-white"><strong><i class="bi bi-boxes text-success"></i> Xuất – Nhập – Tồn theo vắc-xin</strong></div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr><th>Vắc-xin</th><th class="text-end">Số lô</th><th class="text-end">Tổng nhập</th><th class="text-end">Đã xuất</th><th class="text-end">Tồn hiện tại</th></tr>
+            </thead>
+            <tbody>
+                {% for r in rows %}
+                <tr>
+                    <td class="fw-semibold">{{ r.vx.ten }}</td>
+                    <td class="text-end">{{ r.so_lo }}</td>
+                    <td class="text-end">{{ r.nhap }}</td>
+                    <td class="text-end text-primary">{{ r.xuat }}</td>
+                    <td class="text-end fw-bold {% if r.ton < 20 %}text-danger{% else %}text-success{% endif %}">{{ r.ton }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" class="text-center text-muted py-3">Chưa có dữ liệu kho.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Panel: Da xuat theo vac-xin -->
+<div class="card shadow-sm mb-3 kho-panel d-none" id="p-xuat">
+    <div class="card-header bg-white"><strong><i class="bi bi-box-arrow-up text-primary"></i> Đã xuất theo vắc-xin (tổng {{ tong_xuat }} liều)</strong></div>
+    <div class="table-responsive">
+        {% if tong_xuat %}
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light"><tr><th>Vắc-xin</th><th class="text-end">Đã xuất</th><th class="text-end">Số lô</th><th class="text-end">Tồn hiện tại</th></tr></thead>
+            <tbody>
+                {% for r in rows %}{% if r.xuat %}
+                <tr>
+                    <td class="fw-semibold">{{ r.vx.ten }}</td>
+                    <td class="text-end fw-bold text-primary">{{ r.xuat }}</td>
+                    <td class="text-end">{{ r.so_lo }}</td>
+                    <td class="text-end">{{ r.ton }}</td>
+                </tr>
+                {% endif %}{% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="text-center text-muted py-3 mb-0">Chưa có lần xuất kho nào.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Panel: Lo da het han -->
+<div class="card shadow-sm mb-3 kho-panel d-none" id="p-hethan">
+    <div class="card-header bg-white"><strong><i class="bi bi-calendar-x text-dark"></i> Lô đã hết hạn ({{ het_han.count }})</strong></div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light"><tr><th>Vắc-xin</th><th>Số lô</th><th>Hạn dùng</th><th class="text-end">Tồn</th></tr></thead>
+            <tbody>
+                {% for lo in het_han %}
+                <tr>
+                    <td class="fw-semibold">{{ lo.vac_xin.ten }}</td>
+                    <td>{{ lo.so_lo }}</td>
+                    <td class="text-danger">{{ lo.han_su_dung|date:"d/m/Y" }}</td>
+                    <td class="text-end">{{ lo.so_luong_ton }}</td>
+                </tr>
+                {% empty %}<tr><td colspan="4" class="text-center text-muted py-3">Không có lô nào hết hạn.</td></tr>{% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Luon hien: Lo sap het han -->
+<div class="card shadow-sm border-warning">
+    <div class="card-header bg-warning"><strong><i class="bi bi-clock-history"></i> Lô sắp hết hạn (≤ 60 ngày)</strong></div>
+    <ul class="list-group list-group-flush">
+        {% for lo in sap_het %}
+        <li class="list-group-item d-flex justify-content-between">
+            <span>{{ lo.vac_xin.ten }} — lô {{ lo.so_lo }}</span>
+            <span class="text-muted">HSD {{ lo.han_su_dung|date:"d/m/Y" }} · tồn {{ lo.so_luong_ton }}</span>
+        </li>
+        {% empty %}<li class="list-group-item text-muted">Không có lô nào sắp hết hạn.</li>{% endfor %}
+    </ul>
+</div>
+
+<!-- Modal xem truoc PDF -->
+<div class="modal fade" id="modalPdf" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title mb-0"><i class="bi bi-file-earmark-pdf text-danger"></i> Xem trước báo cáo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body p-0">
+                <iframe id="pdfFrame" data-src="{% url 'thu_kho_bao_cao_pdf' %}" title="Xem trước báo cáo"
+                        style="width:100%; height:75vh; border:0;"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+    var cards = document.querySelectorAll('.kho-card');
+    var panels = document.querySelectorAll('.kho-panel');
+    function chon(id) {
+        cards.forEach(function (c) { c.classList.toggle('active', c.dataset.target === id); });
+        panels.forEach(function (p) { p.classList.toggle('d-none', p.id !== id); });
+    }
+    cards.forEach(function (c) {
+        c.addEventListener('click', function () { chon(c.dataset.target); });
+    });
+
+    // Chi tai PDF vao iframe khi mo modal (do dong thi giai phong)
+    var modalPdf = document.getElementById('modalPdf');
+    if (modalPdf) {
+        var frame = document.getElementById('pdfFrame');
+        modalPdf.addEventListener('show.bs.modal', function () {
+            if (!frame.getAttribute('src')) frame.src = frame.dataset.src;
+        });
+        modalPdf.addEventListener('hidden.bs.modal', function () {
+            frame.removeAttribute('src');
+        });
+    }
+})();
+</script>
+{% endblock %}

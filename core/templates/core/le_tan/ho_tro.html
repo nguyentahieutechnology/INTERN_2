@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block title %}Lễ tân - Hỗ trợ{% endblock %}
+
+{% block content %}
+<h3 class="mb-3"><i class="bi bi-clipboard-check"></i> Khu vực Lễ tân</h3>
+{% include 'core/le_tan/_nav.html' %}
+
+<div class="row g-3">
+    <!-- Danh sach hoi thoai -->
+    <div class="col-lg-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white"><strong><i class="bi bi-chat-dots"></i> Khách cần hỗ trợ</strong></div>
+            <div class="list-group list-group-flush" style="max-height:520px; overflow-y:auto">
+                {% for kh in threads %}
+                <a href="?khach={{ kh.id }}"
+                   class="list-group-item list-group-item-action d-flex justify-content-between align-items-center {% if chon and chon.id == kh.id %}active{% endif %}">
+                    <span>
+                        <i class="bi bi-person-circle"></i>
+                        {{ kh.get_full_name|default:kh.username }}
+                        <div class="small {% if chon and chon.id == kh.id %}text-white-50{% else %}text-muted{% endif %}">{{ kh.tin_cuoi|date:"H:i d/m" }}</div>
+                    </span>
+                    {% if kh.chua_doc %}<span class="badge text-bg-danger rounded-pill">{{ kh.chua_doc }}</span>{% endif %}
+                </a>
+                {% empty %}
+                <div class="list-group-item text-muted text-center py-4">Chưa có tin nhắn hỗ trợ nào.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Hoi thoai -->
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            {% if chon %}
+            <div class="card-header bg-white"><strong>{{ chon.get_full_name|default:chon.username }}</strong></div>
+            <div class="card-body" style="height:420px; overflow-y:auto; background:#f8f9fa; display:flex; flex-direction:column; gap:.5rem;">
+                {% for t in tin %}
+                <div class="p-2 rounded {% if t.la_nhan_vien %}align-self-end text-bg-primary{% else %}align-self-start bg-white border{% endif %}" style="max-width:75%">
+                    <div class="small">{{ t.noi_dung }}</div>
+                    <div class="text-end" style="font-size:.7rem; opacity:.7">{{ t.ngay|date:"H:i d/m" }}</div>
+                </div>
+                {% empty %}<div class="text-muted text-center my-auto">Chưa có tin nhắn.</div>{% endfor %}
+            </div>
+            <div class="card-footer bg-white">
+                <form method="post" action="{% url 'le_tan_ho_tro' %}" class="d-flex gap-2">
+                    {% csrf_token %}
+                    <input type="hidden" name="khach" value="{{ chon.id }}">
+                    <input type="text" name="noi_dung" class="form-control" placeholder="Nhập trả lời..." autocomplete="off" required>
+                    <button class="btn btn-outline-primary text-nowrap"><i class="bi bi-send"></i> Gửi</button>
+                </form>
+            </div>
+            {% else %}
+            <div class="card-body text-center text-muted py-5">
+                <i class="bi bi-chat-left-dots" style="font-size:2.5rem"></i>
+                <p class="mt-2 mb-0">Chọn một khách hàng bên trái để xem và trả lời tin nhắn.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,30 @@
+<ul class="nav nav-pills mb-3">
+    <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name == 'le_tan_dashboard' %}active{% endif %}"
+           href="{% url 'le_tan_dashboard' %}"><i class="bi bi-speedometer2"></i> Dashboard</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name == 'le_tan_lich_hen' %}active{% endif %}"
+           href="{% url 'le_tan_lich_hen' %}"><i class="bi bi-calendar-check"></i> Lịch hẹn</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name == 'le_tan_khach_hang' %}active{% endif %}"
+           href="{% url 'le_tan_khach_hang' %}"><i class="bi bi-people"></i> Khách hàng</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name == 'le_tan_dang_ky_tiem' %}active{% endif %}"
+           href="{% url 'le_tan_dang_ky_tiem' %}"><i class="bi bi-clipboard-plus"></i> Đăng ký tiêm</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% if 'quy_trinh' in request.resolver_match.url_name %}active{% endif %}"
+           href="{% url 'quy_trinh_list' %}"><i class="bi bi-diagram-3"></i> Quá trình</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name == 'bao_cao_nhac_mui' %}active{% endif %}"
+           href="{% url 'bao_cao_nhac_mui' %}"><i class="bi bi-bell"></i> Nhắc mũi</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name == 'le_tan_ho_tro' %}active{% endif %}"
+           href="{% url 'le_tan_ho_tro' %}"><i class="bi bi-chat-dots"></i> Hỗ trợ{% if so_ho_tro_chua_doc %} <span class="badge text-bg-danger">{{ so_ho_tro_chua_doc }}</span>{% endif %}</a>
+    </li>
+</ul>

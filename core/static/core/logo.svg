@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Logo phong kham tiem chung">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3b82f6"/>
+      <stop offset="1" stop-color="#0d6efd"/>
+    </linearGradient>
+  </defs>
+  <!-- Khien bao ve -->
+  <path d="M32 3 L56 12 V30 C56 46 45 56 32 61 C19 56 8 46 8 30 V12 Z" fill="url(#g)"/>
+  <!-- Dau cong y te -->
+  <rect x="27.5" y="18" width="9" height="28" rx="2" fill="#ffffff"/>
+  <rect x="18" y="27.5" width="28" height="9" rx="2" fill="#ffffff"/>
+</svg>

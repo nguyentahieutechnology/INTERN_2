@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block title %}Cẩm nang tiêm chủng{% endblock %}
+
+{% block content %}
+<h3 class="mb-3">Cẩm nang tiêm chủng</h3>
+
+<div class="row g-3">
+    <div class="col-lg-8">
+        <div class="accordion shadow-sm" id="camNang">
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#c1">
+                        Trước khi tiêm cần chuẩn bị gì?
+                    </button>
+                </h2>
+                <div id="c1" class="accordion-collapse collapse show" data-bs-parent="#camNang">
+                    <div class="accordion-body small">
+                        Mang theo sổ tiêm chủng (nếu có), ăn uống đầy đủ, thông báo cho bác sĩ
+                        về tiền sử dị ứng và tình trạng sức khỏe hiện tại.
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c2">
+                        Theo dõi sau tiêm như thế nào?
+                    </button>
+                </h2>
+                <div id="c2" class="accordion-collapse collapse" data-bs-parent="#camNang">
+                    <div class="accordion-body small">
+                        Ở lại phòng khám theo dõi ít nhất 30 phút. Về nhà tiếp tục theo dõi 24&ndash;48 giờ:
+                        nhiệt độ, vị trí tiêm, phản ứng toàn thân. Đến cơ sở y tế ngay nếu có dấu hiệu bất thường.
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c3">
+                        Vì sao cần tiêm đúng lịch, đủ mũi?
+                    </button>
+                </h2>
+                <div id="c3" class="accordion-collapse collapse" data-bs-parent="#camNang">
+                    <div class="accordion-body small">
+                        Tiêm đủ mũi và đúng khoảng cách giúp cơ thể tạo miễn dịch đầy đủ và bền vững.
+                        Hệ thống sẽ tự động nhắc bạn ngày tiêm mũi tiếp theo theo phác đồ.
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c4">
+                        Những trường hợp nên hoãn tiêm?
+                    </button>
+                </h2>
+                <div id="c4" class="accordion-collapse collapse" data-bs-parent="#camNang">
+                    <div class="accordion-body small">
+                        Đang sốt, mắc bệnh cấp tính, hoặc theo chỉ định của bác sĩ sau khám sàng lọc.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card shadow-sm bg-light">
+            <div class="card-body">
+                <h6 class="text-primary"><i class="bi bi-telephone"></i> Cần tư vấn?</h6>
+                <p class="small mb-2">Đặt lịch hẹn để được bác sĩ khám sàng lọc và tư vấn phác đồ phù hợp.</p>
+                <a href="{% url 'dat_lich' %}" class="btn btn-outline-primary btn-sm w-100">Đặt lịch hẹn</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
