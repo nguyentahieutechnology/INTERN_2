@@ -1,4 +1,5 @@
-{% if lh.trang_thai == 'cho' %}<span class="badge text-bg-secondary">Chờ xác nhận</span>
-{% elif lh.trang_thai == 'xacnhan' %}<span class="badge text-bg-info">Đã xác nhận</span>
-{% elif lh.trang_thai == 'datiem' %}<span class="badge text-bg-success">{% if lh.la_tai_kham %}Đã khám{% else %}Đã tiêm{% endif %}</span>
-{% else %}<span class="badge text-bg-danger">Đã hủy</span>{% endif %}
+{% load i18n %}
+{% if lh.trang_thai == 'cho' %}<span class="badge text-bg-secondary">{% translate "Chờ xác nhận" %}</span>
+{% elif lh.trang_thai == 'xacnhan' %}<span class="badge text-bg-info">{% translate "Đã xác nhận" %}</span>
+{% elif lh.trang_thai == 'datiem' %}<span class="badge text-bg-success">{% if lh.la_tai_kham %}{% translate "Đã khám" %}{% else %}{% translate "Đã tiêm" %}{% endif %}</span>
+{% else %}<span class="badge text-bg-danger">{% translate "Đã hủy" %}</span>{% endif %}

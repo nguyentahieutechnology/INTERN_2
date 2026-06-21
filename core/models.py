@@ -2,17 +2,19 @@ from datetime import timedelta
 
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils.translation import gettext_lazy as _
+
 
 
 class KhachHang(models.Model):
     """Khach hang / nguoi duoc tiem chung."""
-    GIOI_TINH = [('Nam', 'Nam'), ('Nu', 'Nu'), ('Khac', 'Khac')]
+    GIOI_TINH = [('Nam', _('Nam')), ('Nu', _('Nữ')), ('Khac', _('Khác'))]
     QUAN_HE = [
-        ('ban_than', 'Bản thân'),
-        ('con', 'Con'),
-        ('vo_chong', 'Vợ/Chồng'),
-        ('bo_me', 'Bố/Mẹ'),
-        ('khac', 'Người thân khác'),
+        ('ban_than', _('Bản thân')),
+        ('con', _('Con')),
+        ('vo_chong', _('Vợ/Chồng')),
+        ('bo_me', _('Bố/Mẹ')),
+        ('khac', _('Người thân khác')),
     ]
 
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True,
@@ -63,7 +65,7 @@ class VacXin(models.Model):
 
 class PhacDo(models.Model):
     """Phac do / goi tiem (vd: 6 trong 1, goi cho nguoi lon)."""
-    NHOM = [('tre_em', 'Tre em'), ('nguoi_lon', 'Nguoi lon')]
+    NHOM = [('tre_em', _('Trẻ em')), ('nguoi_lon', _('Người lớn'))]
 
     ten = models.CharField('Ten phac do', max_length=150)
     nhom = models.CharField('Nhom doi tuong', max_length=10, choices=NHOM, default='tre_em')
@@ -120,14 +122,14 @@ class LoVacXin(models.Model):
 class LichHen(models.Model):
     """Lich hen tiem cua khach."""
     TRANG_THAI = [
-        ('cho', 'Chờ xác nhận'),
-        ('xacnhan', 'Đã xác nhận'),
-        ('datiem', 'Đã tiêm'),
-        ('huy', 'Đã hủy'),
+        ('cho', _('Chờ xác nhận')),
+        ('xacnhan', _('Đã xác nhận')),
+        ('datiem', _('Đã tiêm')),
+        ('huy', _('Đã hủy')),
     ]
     LOAI_CHI_DINH = [
-        ('khach_hang', 'Mong muốn của khách hàng'),
-        ('benh_vien', 'Bệnh viện chỉ định'),
+        ('khach_hang', _('Mong muốn của khách hàng')),
+        ('benh_vien', _('Bệnh viện chỉ định')),
     ]
     khach_hang = models.ForeignKey(KhachHang, on_delete=models.CASCADE,
                                    related_name='lich_hen', verbose_name='Khach hang')
@@ -324,6 +326,112 @@ class ThongBao(models.Model):
     def __str__(self):
         return f'{self.nguoi_nhan} - {self.noi_dung[:40]}'
 
+    @property
+    def noi_dung_en(self):
+        s = self.noi_dung
+        # 1. Lịch hẹn mới: {ho_ten} đặt ngày {ngay} (chờ xác nhận).
+        if s.startswith("Lịch hẹn mới: ") and s.endswith(" (chờ xác nhận)."):
+            mid = s[len("Lịch hẹn mới: "):-len(" (chờ xác nhận).")]
+            if " đặt ngày " in mid:
+                name, date = mid.split(" đặt ngày ", 1)
+                return f"New appointment: {name} booked for {date} (pending confirmation)."
+        
+        # 2. Lịch hẹn ngày {ngay} đã chuyển sang "{ten_tt}".
+        if s.startswith("Lịch hẹn ngày ") and " đã chuyển sang \"" in s:
+            parts = s[len("Lịch hẹn ngày "):].split(" đã chuyển sang \"", 1)
+            if len(parts) == 2:
+                date, status_part = parts
+                status = status_part.rstrip('"')
+                status_map = {
+                    "Chờ xác nhận": "Pending confirmation",
+                    "Đã xác nhận": "Confirmed",
+                    "Đã tiêm": "Vaccinated",
+                    "Đã hủy": "Canceled",
+                    "Đã khám": "Examined",
+                }
+                status_en = status_map.get(status, status)
+                return f"Appointment on {date} has been changed to \"{status_en}\"."
+
+        # 3. Bạn vừa được ghi nhận tiêm "{ten_vac_xin}" (mũi {mui_so}).
+        if s.startswith("Bạn vừa được ghi nhận tiêm \"") and ")." in s:
+            parts = s[len("Bạn vừa được ghi nhận tiêm \""):].split("\" (mũi ", 1)
+            if len(parts) == 2:
+                vac_name, dose_part = parts
+                dose = dose_part.rstrip(').')
+                return f"You have been recorded as vaccinated with \"{vac_name}\" (dose {dose})."
+
+        # 4. Yêu cầu đặt lại mật khẩu từ tài khoản "{username}".
+        if s.startswith("Yêu cầu đặt lại mật khẩu từ tài khoản \"") and s.endswith("\"."):
+            username = s[len("Yêu cầu đặt lại mật khẩu từ tài khoản \""):-2]
+            return f"Password reset request from account \"{username}\"."
+
+        # 5. Nhắc lịch tiêm cho {ho_ten}: mũi tiếp theo...
+        if s.startswith("Nhắc lịch tiêm cho "):
+            mid = s[len("Nhắc lịch tiêm cho "):]
+            if ": mũi tiếp theo dự kiến " in mid:
+                parts = mid.split(": mũi tiếp theo dự kiến ", 1)
+                name = parts[0]
+                date = parts[1].split(". Vui lòng ", 1)[0]
+                return f"Vaccination reminder for {name}: next dose expected on {date}. Please book an appointment."
+            elif ": mũi tiếp theo. Vui lòng đặt lịch hẹn." in mid:
+                name = mid.split(": mũi tiếp theo. Vui lòng đặt lịch hẹn.", 1)[0]
+                return f"Vaccination reminder for {name}: next dose. Please book an appointment."
+
+        # 6. Phòng khám đã trả lời tin nhắn hỗ trợ của bạn.
+        if s == "Phòng khám đã trả lời tin nhắn hỗ trợ của bạn.":
+            return "The clinic has replied to your support message."
+
+        # 7. Khách "{ho_ten}" đã tự hủy lịch hẹn ngày {ngay}.
+        if s.startswith("Khách \"") and " đã tự hủy lịch hẹn ngày " in s:
+            parts = s[len("Khách \""):].split("\" đã tự hủy lịch hẹn ngày ", 1)
+            if len(parts) == 2:
+                name, date = parts
+                date = date.rstrip('.')
+                return f"Customer \"{name}\" has canceled the appointment on {date}."
+
+        # 8. Khách "{kh.ho_ten}" cần quay lại tái khám sau phản ứng tiêm...
+        if s.startswith("Khách \"") and " cần quay lại tái khám sau phản ứng tiêm." in s:
+            parts = s[len("Khách \""):].split("\" cần quay lại tái khám sau phản ứng tiêm.", 1)
+            if len(parts) == 2:
+                name, rest = parts
+                if rest.startswith(" Lý do: ") and rest.endswith(" Bấm để đặt lịch."):
+                    ly_do = rest[len(" Lý do: "):-len(" Bấm để đặt lịch.")]
+                    return f"Customer \"{name}\" needs to return for follow-up examination due to vaccine reaction. Reason: {ly_do}. Click to book."
+                elif rest.endswith(" Bấm để đặt lịch."):
+                    return f"Customer \"{name}\" needs to return for follow-up examination due to vaccine reaction. Click to book."
+
+        # 9. Phản hồi theo dõi sau tiêm: {noi_dung}.
+        if s.startswith("Phản hồi theo dõi sau tiêm: ") and s.endswith("."):
+            content = s[len("Phản hồi theo dõi sau tiêm: "):-1]
+            status_map = {
+                "Quay lại để kiểm tra": "Return for examination",
+                "Điều kiện bình thường": "Normal condition",
+                "Theo dõi tiếp": "Continue monitoring",
+                "Khác": "Other",
+            }
+            content_en = status_map.get(content, content)
+            return f"Post-vaccination follow-up feedback: {content_en}."
+
+        # 10. Mật khẩu của bạn đã được quản trị đặt lại...
+        if s == "Mật khẩu của bạn đã được quản trị đặt lại. Vui lòng đăng nhập với mật khẩu mới.":
+            return "Your password has been reset by the administrator. Please log in with your new password."
+
+        # 11. Yêu cầu đặt lại mật khẩu của bạn đã bị từ chối...
+        if s == "Yêu cầu đặt lại mật khẩu của bạn đã bị từ chối. Vui lòng liên hệ phòng khám nếu cần hỗ trợ.":
+            return "Your password reset request has been rejected. Please contact the clinic for assistance."
+
+        # 12. Mật khẩu tài khoản "{username}" đã được quản trị đặt lại.
+        if s.startswith("Mật khẩu tài khoản \"") and s.endswith("\" đã được quản trị đặt lại."):
+            username = s[len("Mật khẩu tài khoản \""):-len("\" đã được quản trị đặt lại.")]
+            return f"Password for account \"{username}\" has been reset by the administrator."
+
+        # 13. Yêu cầu đặt lại mật khẩu của "{yc.user.username}" đã bị từ chối.
+        if s.startswith("Yêu cầu đặt lại mật khẩu của \"") and s.endswith("\" đã bị từ chối."):
+            username = s[len("Yêu cầu đặt lại mật khẩu của \""):-len("\" đã bị từ chối.")]
+            return f"Password reset request for \"{username}\" has been rejected."
+
+        return s
+
 
 class QuyTrinhTiem(models.Model):
     """Theo doi quy trinh tiem cua mot lich hen qua 9 buoc."""
@@ -442,6 +550,50 @@ class LichSuQuanTri(models.Model):
 
     def __str__(self):
         return f'{self.nguoi} - {self.hanh_dong[:40]}'
+
+    @property
+    def hanh_dong_en(self):
+        s = self.hanh_dong
+        if s.startswith("Nhập kho ") and s.endswith(" lô từ Excel"):
+            n = s[len("Nhập kho "):-len(" lô từ Excel")]
+            return f"Imported {n} batches from Excel"
+        elif s.startswith("Tạo tài khoản \"") and s.endswith("\""):
+            u = s[len("Tạo tài khoản \""):-1]
+            return f"Created account \"{u}\""
+        elif s.startswith("Sửa tài khoản \"") and s.endswith("\""):
+            u = s[len("Sửa tài khoản \""):-1]
+            return f"Edited account \"{u}\""
+        elif s.startswith("Khóa tài khoản \"") and s.endswith("\""):
+            u = s[len("Khóa tài khoản \""):-1]
+            return f"Locked account \"{u}\""
+        elif s.startswith("Mở khóa tài khoản \"") and s.endswith("\""):
+            u = s[len("Mở khóa tài khoản \""):-1]
+            return f"Unlocked account \"{u}\""
+        elif s.startswith("Thêm vắc-xin \"") and s.endswith("\""):
+            v = s[len("Thêm vắc-xin \""):-1]
+            return f"Added vaccine \"{v}\""
+        elif s.startswith("Sửa vắc-xin \"") and s.endswith("\""):
+            v = s[len("Sửa vắc-xin \""):-1]
+            return f"Edited vaccine \"{v}\""
+        elif s.startswith("Xóa vắc-xin \"") and s.endswith("\""):
+            v = s[len("Xóa vắc-xin \""):-1]
+            return f"Deleted vaccine \"{v}\""
+        elif s.startswith("Thêm phác đồ \"") and s.endswith("\""):
+            p = s[len("Thêm phác đồ \""):-1]
+            return f"Added schedule \"{p}\""
+        elif s.startswith("Sửa phác đồ \"") and s.endswith("\""):
+            p = s[len("Sửa phác đồ \""):-1]
+            return f"Edited schedule \"{p}\""
+        elif s.startswith("Xóa phác đồ \"") and s.endswith("\""):
+            p = s[len("Xóa phác đồ \""):-1]
+            return f"Deleted schedule \"{p}\""
+        elif s.startswith("Đặt lại mật khẩu cho \"") and s.endswith("\""):
+            u = s[len("Đặt lại mật khẩu cho \""):-1]
+            return f"Reset password for \"{u}\""
+        elif s.startswith("Từ chối yêu cầu đặt lại mật khẩu của \"") and s.endswith("\""):
+            u = s[len("Từ chối yêu cầu đặt lại mật khẩu của \""):-1]
+            return f"Rejected password reset request from \"{u}\""
+        return s
 
 
 class TinNhanHoTro(models.Model):

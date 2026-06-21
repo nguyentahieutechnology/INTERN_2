@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
-{% load static %}
-{% block title %}Đặt lịch hẹn{% endblock %}
+{% load static i18n %}
+{% block title %}{% translate "Đặt lịch hẹn" %}{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-7 col-lg-6">
         <div class="card shadow-sm mt-4">
             <div class="card-body p-4">
-                <h4 class="mb-3"><i class="bi bi-calendar-plus text-primary"></i> Đặt lịch hẹn tiêm</h4>
+                <h4 class="mb-3"><i class="bi bi-calendar-plus text-primary"></i> {% translate "Đặt lịch hẹn tiêm" %}</h4>
 
                 {% if form.non_field_errors %}
                 <div class="alert alert-danger py-2 small">{{ form.non_field_errors|striptags }}</div>
@@ -24,11 +24,11 @@
 
                     {# Hinh thuc chi dinh (radio) #}
                     <div class="mb-3">
-                        <label class="form-label d-block">{{ form.loai_chi_dinh.label }}</label>
+                        <label class="form-label d-block">{% translate form.loai_chi_dinh.label %}</label>
                         {% for radio in form.loai_chi_dinh %}
                         <div class="form-check form-check-inline">
                             {{ radio.tag }}
-                            <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                            <label class="form-check-label" for="{{ radio.id_for_label }}">{% translate radio.choice_label %}</label>
                         </div>
                         {% endfor %}
                     </div>
@@ -42,12 +42,12 @@
                     {% include 'core/_field.html' with field=form.ghi_chu %}
 
                     <button type="submit" class="btn btn-outline-primary w-100">
-                        <i class="bi bi-check-circle"></i> Xác nhận đặt lịch
+                        <i class="bi bi-check-circle"></i> {% translate "Xác nhận đặt lịch" %}
                     </button>
                 </form>
 
                 <div class="text-center mt-3">
-                    <a href="{% url 'ca_nhan' %}" class="small text-muted">&larr; Về hồ sơ của tôi</a>
+                    <a href="{% url 'ca_nhan' %}" class="small text-muted">&larr; {% translate "Về hồ sơ của tôi" %}</a>
                 </div>
             </div>
         </div>

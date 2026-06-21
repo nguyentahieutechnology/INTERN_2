@@ -1,6 +1,8 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import Group, User
+from django.utils.translation import gettext_lazy as _
+
 
 from core.models import (KhachHang, LichHen, LoVacXin, MuiTiem,
                          PhacDo, PhacDoChiTiet, TheoDoiSauTiem, VacXin)
@@ -8,11 +10,11 @@ from core.models import (KhachHang, LichHen, LoVacXin, MuiTiem,
 
 class DangKyForm(UserCreationForm):
     """Form khach hang tu dang ky tai khoan + tao ho so KhachHang."""
-    ho_ten = forms.CharField(label='Họ và tên', max_length=100)
-    gioi_tinh = forms.ChoiceField(label='Giới tính', choices=KhachHang.GIOI_TINH)
-    so_dien_thoai = forms.CharField(label='Số điện thoại', max_length=15)
+    ho_ten = forms.CharField(label=_('Họ và tên'), max_length=100)
+    gioi_tinh = forms.ChoiceField(label=_('Giới tính'), choices=KhachHang.GIOI_TINH)
+    so_dien_thoai = forms.CharField(label=_('Số điện thoại'), max_length=15)
     ngay_sinh = forms.DateField(
-        label='Ngày sinh',
+        label=_('Ngày sinh'),
         widget=forms.DateInput(attrs={'type': 'date'}))
 
     field_order = ['username', 'ho_ten', 'gioi_tinh', 'so_dien_thoai', 'ngay_sinh',
@@ -21,12 +23,12 @@ class DangKyForm(UserCreationForm):
     class Meta:
         model = User
         fields = ['username']
-        labels = {'username': 'Tên đăng nhập'}
+        labels = {'username': _('Tên đăng nhập')}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['password1'].label = 'Mật khẩu'
-        self.fields['password2'].label = 'Xác nhận mật khẩu'
+        self.fields['password1'].label = _('Mật khẩu')
+        self.fields['password2'].label = _('Xác nhận mật khẩu')
         for name, field in self.fields.items():
             # Select dung 'form-select', cac o khac dung 'form-control'
             css = 'form-select' if name == 'gioi_tinh' else 'form-control'
@@ -59,15 +61,15 @@ class DatLichForm(forms.ModelForm):
         fields = ['khach_hang', 'vac_xin', 'phac_do', 'ngay_hen', 'gio_hen',
                   'loai_chi_dinh', 'benh_vien', 'bac_si_chi_dinh', 'ghi_chu']
         labels = {
-            'khach_hang': 'Người được tiêm',
-            'vac_xin': 'Vắc-xin đăng ký',
-            'phac_do': 'Gói tiêm / Phác đồ (tùy chọn)',
-            'ngay_hen': 'Ngày hẹn',
-            'gio_hen': 'Giờ hẹn (tùy chọn)',
-            'loai_chi_dinh': 'Hình thức chỉ định',
-            'benh_vien': 'Bệnh viện chỉ định',
-            'bac_si_chi_dinh': 'Bác sĩ chỉ định',
-            'ghi_chu': 'Ghi chú (tùy chọn)',
+            'khach_hang': _('Người được tiêm'),
+            'vac_xin': _('Vắc-xin đăng ký'),
+            'phac_do': _('Gói tiêm / Phác đồ (tùy chọn)'),
+            'ngay_hen': _('Ngày hẹn'),
+            'gio_hen': _('Giờ hẹn (tùy chọn)'),
+            'loai_chi_dinh': _('Hình thức chỉ định'),
+            'benh_vien': _('Bệnh viện chỉ định'),
+            'bac_si_chi_dinh': _('Bác sĩ chỉ định'),
+            'ghi_chu': _('Ghi chú (tùy chọn)'),
         }
         widgets = {
             'ngay_hen': forms.DateInput(attrs={'type': 'date'}),
@@ -90,7 +92,7 @@ class DatLichForm(forms.ModelForm):
     def clean(self):
         cleaned = super().clean()
         if cleaned.get('loai_chi_dinh') == 'benh_vien' and not cleaned.get('benh_vien'):
-            self.add_error('benh_vien', 'Vui lòng nhập tên bệnh viện chỉ định.')
+            self.add_error('benh_vien', _('Vui lòng nhập tên bệnh viện chỉ định.'))
         return cleaned
 
 
@@ -101,10 +103,10 @@ class TaiKhamForm(forms.ModelForm):
         model = LichHen
         fields = ['khach_hang', 'ngay_hen', 'gio_hen', 'ghi_chu']
         labels = {
-            'khach_hang': 'Người được tiêm',
-            'ngay_hen': 'Ngày hẹn',
-            'gio_hen': 'Giờ hẹn',
-            'ghi_chu': 'Ghi chú',
+            'khach_hang': _('Người được tiêm'),
+            'ngay_hen': _('Ngày hẹn'),
+            'gio_hen': _('Giờ hẹn'),
+            'ghi_chu': _('Ghi chú'),
         }
         widgets = {
             'ngay_hen': forms.DateInput(attrs={'type': 'date'}),
@@ -128,11 +130,11 @@ class NguoiThanForm(forms.ModelForm):
         model = KhachHang
         fields = ['ho_ten', 'quan_he', 'gioi_tinh', 'ngay_sinh', 'so_dien_thoai']
         labels = {
-            'ho_ten': 'Họ và tên',
-            'quan_he': 'Quan hệ với bạn',
-            'gioi_tinh': 'Giới tính',
-            'ngay_sinh': 'Ngày sinh',
-            'so_dien_thoai': 'Số điện thoại',
+            'ho_ten': _('Họ và tên'),
+            'quan_he': _('Quan hệ với bạn'),
+            'gioi_tinh': _('Giới tính'),
+            'ngay_sinh': _('Ngày sinh'),
+            'so_dien_thoai': _('Số điện thoại'),
         }
         widgets = {'ngay_sinh': forms.DateInput(attrs={'type': 'date'})}
 
@@ -151,12 +153,12 @@ class TheoDoiForm(forms.ModelForm):
         model = TheoDoiSauTiem
         fields = ['mui_tiem', 'thoi_diem', 'nhiet_do', 'trieu_chung', 'muc_do', 'ghi_chu']
         labels = {
-            'mui_tiem': 'Mũi tiêm',
-            'thoi_diem': 'Thời điểm theo dõi',
-            'nhiet_do': 'Nhiệt độ (°C)',
-            'trieu_chung': 'Triệu chứng (nếu có)',
-            'muc_do': 'Mức độ',
-            'ghi_chu': 'Ghi chú',
+            'mui_tiem': _('Mũi tiêm'),
+            'thoi_diem': _('Thời điểm theo dõi'),
+            'nhiet_do': _('Nhiệt độ (°C)'),
+            'trieu_chung': _('Triệu chứng (nếu có)'),
+            'muc_do': _('Mức độ'),
+            'ghi_chu': _('Ghi chú'),
         }
         widgets = {
             'ghi_chu': forms.Textarea(attrs={'rows': 2}),
@@ -178,12 +180,12 @@ class KhachHangForm(forms.ModelForm):
         model = KhachHang
         fields = ['ho_ten', 'gioi_tinh', 'ngay_sinh', 'so_dien_thoai', 'cccd', 'dia_chi']
         labels = {
-            'ho_ten': 'Họ và tên',
-            'gioi_tinh': 'Giới tính',
-            'ngay_sinh': 'Ngày sinh',
-            'so_dien_thoai': 'Số điện thoại',
-            'cccd': 'CCCD/CMND',
-            'dia_chi': 'Địa chỉ',
+            'ho_ten': _('Họ và tên'),
+            'gioi_tinh': _('Giới tính'),
+            'ngay_sinh': _('Ngày sinh'),
+            'so_dien_thoai': _('Số điện thoại'),
+            'cccd': _('CCCD/CMND'),
+            'dia_chi': _('Địa chỉ'),
         }
         widgets = {'ngay_sinh': forms.DateInput(attrs={'type': 'date'})}
 
@@ -208,16 +210,16 @@ class KhachHangForm(forms.ModelForm):
 class TaiKhoanNhanVienForm(forms.Form):
     """Admin tao tai khoan nhan vien + gan vai tro."""
     VAI_TRO = [
-        ('Le tan', 'Lễ tân'),
-        ('Bac si', 'Bác sĩ'),
-        ('Dieu duong', 'Điều dưỡng'),
-        ('Thu kho', 'Thủ kho'),
-        ('Quan tri', 'Quản trị'),
+        ('Le tan', _('Lễ tân')),
+        ('Bac si', _('Bác sĩ')),
+        ('Dieu duong', _('Điều dưỡng')),
+        ('Thu kho', _('Thủ kho')),
+        ('Quan tri', _('Quản trị')),
     ]
-    username = forms.CharField(label='Tên đăng nhập', max_length=150)
-    ho_ten = forms.CharField(label='Họ và tên', max_length=150, required=False)
-    mat_khau = forms.CharField(label='Mật khẩu', widget=forms.PasswordInput, min_length=6)
-    vai_tro = forms.ChoiceField(label='Vai trò', choices=VAI_TRO)
+    username = forms.CharField(label=_('Tên đăng nhập'), max_length=150)
+    ho_ten = forms.CharField(label=_('Họ và tên'), max_length=150, required=False)
+    mat_khau = forms.CharField(label=_('Mật khẩu'), widget=forms.PasswordInput, min_length=6)
+    vai_tro = forms.ChoiceField(label=_('Vai trò'), choices=VAI_TRO)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -228,7 +230,7 @@ class TaiKhoanNhanVienForm(forms.Form):
     def clean_username(self):
         u = self.cleaned_data['username'].strip()
         if User.objects.filter(username=u).exists():
-            raise forms.ValidationError('Tên đăng nhập đã tồn tại.')
+            raise forms.ValidationError(_('Tên đăng nhập đã tồn tại.'))
         return u
 
     def save(self):
@@ -245,9 +247,9 @@ class TaiKhoanNhanVienForm(forms.Form):
 
 class SuaNhanVienForm(forms.Form):
     """Admin sua thong tin + vai tro + mat khau nhan vien."""
-    ho_ten = forms.CharField(label='Họ và tên', max_length=150, required=False)
-    vai_tro = forms.ChoiceField(label='Vai trò', choices=TaiKhoanNhanVienForm.VAI_TRO)
-    mat_khau_moi = forms.CharField(label='Mật khẩu mới (để trống nếu không đổi)',
+    ho_ten = forms.CharField(label=_('Họ và tên'), max_length=150, required=False)
+    vai_tro = forms.ChoiceField(label=_('Vai trò'), choices=TaiKhoanNhanVienForm.VAI_TRO)
+    mat_khau_moi = forms.CharField(label=_('Mật khẩu mới (để trống nếu không đổi)'),
                                    widget=forms.PasswordInput, required=False, min_length=6)
 
     def __init__(self, *args, **kwargs):
@@ -265,14 +267,14 @@ class VacXinForm(forms.ModelForm):
         fields = ['ten', 'phong_benh', 'nha_san_xuat', 'nuoc_san_xuat',
                   'do_tuoi_min_thang', 'do_tuoi_max_thang', 'han_dung_thang', 'gia']
         labels = {
-            'ten': 'Tên vắc-xin',
-            'phong_benh': 'Phòng bệnh',
-            'nha_san_xuat': 'Nhà sản xuất',
-            'nuoc_san_xuat': 'Nước sản xuất',
-            'do_tuoi_min_thang': 'Tuổi tối thiểu (tháng)',
-            'do_tuoi_max_thang': 'Tuổi tối đa (tháng)',
-            'han_dung_thang': 'Tổng hạn dùng (tháng)',
-            'gia': 'Giá (VND)',
+            'ten': _('Tên vắc-xin'),
+            'phong_benh': _('Phòng bệnh'),
+            'nha_san_xuat': _('Nhà sản xuất'),
+            'nuoc_san_xuat': _('Nước sản xuất'),
+            'do_tuoi_min_thang': _('Tuổi tối thiểu (tháng)'),
+            'do_tuoi_max_thang': _('Tuổi tối đa (tháng)'),
+            'han_dung_thang': _('Tổng hạn dùng (tháng)'),
+            'gia': _('Giá (VND)'),
         }
 
     def __init__(self, *args, **kwargs):
@@ -288,12 +290,12 @@ class LoVacXinForm(forms.ModelForm):
         model = LoVacXin
         fields = ['vac_xin', 'so_lo', 'ngay_san_xuat', 'ngay_nhap', 'han_su_dung', 'so_luong_ton']
         labels = {
-            'vac_xin': 'Vắc-xin',
-            'so_lo': 'Số lô',
-            'ngay_san_xuat': 'Ngày sản xuất',
-            'ngay_nhap': 'Ngày nhập',
-            'han_su_dung': 'Hạn sử dụng',
-            'so_luong_ton': 'Số lượng',
+            'vac_xin': _('Vắc-xin'),
+            'so_lo': _('Số lô'),
+            'ngay_san_xuat': _('Ngày sản xuất'),
+            'ngay_nhap': _('Ngày nhập'),
+            'han_su_dung': _('Hạn sử dụng'),
+            'so_luong_ton': _('Số lượng'),
         }
         widgets = {
             'ngay_san_xuat': forms.DateInput(attrs={'type': 'date'}),
@@ -314,11 +316,11 @@ class LoVacXinForm(forms.ModelForm):
         vx = cleaned.get('vac_xin')
         sx = cleaned.get('ngay_san_xuat')
         if sx and nhap and sx > nhap:
-            self.add_error('ngay_san_xuat', 'Ngày sản xuất phải trước hoặc bằng ngày nhập.')
+            self.add_error('ngay_san_xuat', _('Ngày sản xuất phải trước hoặc bằng ngày nhập.'))
         if sx and han and sx >= han:
-            self.add_error('ngay_san_xuat', 'Ngày sản xuất phải trước hạn sử dụng.')
+            self.add_error('ngay_san_xuat', _('Ngày sản xuất phải trước hạn sử dụng.'))
         if nhap and han and han <= nhap:
-            self.add_error('han_su_dung', 'Hạn sử dụng phải sau ngày nhập.')
+            self.add_error('han_su_dung', _('Hạn sử dụng phải sau ngày nhập.'))
         elif nhap and han and vx:
             con_lai = (han - nhap).days
             tong = vx.han_dung_thang * 30          # tong han dung (xap xi ngay)
@@ -337,10 +339,10 @@ class PhacDoForm(forms.ModelForm):
         model = PhacDo
         fields = ['ten', 'nhom', 'doi_tuong', 'mo_ta']
         labels = {
-            'ten': 'Tên phác đồ',
-            'nhom': 'Nhóm đối tượng',
-            'doi_tuong': 'Đối tượng áp dụng',
-            'mo_ta': 'Mô tả',
+            'ten': _('Tên phác đồ'),
+            'nhom': _('Nhóm đối tượng'),
+            'doi_tuong': _('Đối tượng áp dụng'),
+            'mo_ta': _('Mô tả'),
         }
         widgets = {
             'doi_tuong': forms.TextInput(

@@ -1,20 +1,21 @@
 {% extends 'base.html' %}
-{% block title %}Cập nhật thông tin - {{ kh.ho_ten }}{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Cập nhật thông tin" %} - {{ kh.ho_ten }}{% endblock %}
 
 {% block content %}
-<a href="{% url 'ho_so_chi_tiet' kh.id %}" class="small text-muted">&larr; Về hồ sơ</a>
+<a href="{% url 'ho_so_chi_tiet' kh.id %}" class="small text-muted">&larr; {% translate "Về hồ sơ" %}</a>
 
 <div class="row justify-content-center mt-1">
     <div class="col-md-7 col-lg-6">
         <div class="card shadow-sm">
-            <div class="card-header bg-white"><strong><i class="bi bi-pencil-square"></i> Cập nhật thông tin: {{ kh.ho_ten }}</strong></div>
+            <div class="card-header bg-white"><strong><i class="bi bi-pencil-square"></i> {% translate "Cập nhật thông tin" %}: {{ kh.ho_ten }}</strong></div>
             <div class="card-body">
                 {% if form.non_field_errors %}<div class="alert alert-danger py-2 small">{{ form.non_field_errors|striptags }}</div>{% endif %}
                 <form method="post" action="{% url 'khach_sua_ho_so' kh.id %}">
                     {% csrf_token %}
                     {% for field in form %}{% include 'core/_field.html' with field=field %}{% endfor %}
-                    <button class="btn btn-outline-primary"><i class="bi bi-check-circle"></i> Lưu thay đổi</button>
-                    <a href="{% url 'ho_so_chi_tiet' kh.id %}" class="btn btn-outline-secondary">Hủy</a>
+                    <button class="btn btn-outline-primary"><i class="bi bi-check-circle"></i> {% translate "Lưu thay đổi" %}</button>
+                    <a href="{% url 'ho_so_chi_tiet' kh.id %}" class="btn btn-outline-secondary">{% translate "Hủy" %}</a>
                 </form>
             </div>
         </div>

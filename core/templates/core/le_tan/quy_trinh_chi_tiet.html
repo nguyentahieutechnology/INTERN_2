@@ -1,27 +1,28 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Chi tiết quá trình tiêm{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Chi tiết quá trình tiêm" %}{% endblock %}
 
 {% block content %}
 {% if request.GET.khu == 'bac_si' %}
-<h3 class="mb-3"><i class="bi bi-person-vcard"></i> Khu vực Bác sĩ</h3>
+<h3 class="mb-3"><i class="bi bi-person-vcard"></i> {% translate "Khu vực Bác sĩ" %}</h3>
 {% include 'core/bac_si/_nav.html' %}
 {% elif la_le_tan or user.is_superuser %}
-<h3 class="mb-3"><i class="bi bi-clipboard-check"></i> Khu vực Lễ tân</h3>
+<h3 class="mb-3"><i class="bi bi-clipboard-check"></i> {% translate "Khu vực Lễ tân" %}</h3>
 {% include 'core/le_tan/_nav.html' %}
 {% elif la_bac_si %}
-<h3 class="mb-3"><i class="bi bi-person-vcard"></i> Khu vực Bác sĩ</h3>
+<h3 class="mb-3"><i class="bi bi-person-vcard"></i> {% translate "Khu vực Bác sĩ" %}</h3>
 {% include 'core/bac_si/_nav.html' %}
 {% else %}
-<h3 class="mb-3"><i class="bi bi-diagram-3"></i> Quá trình</h3>
+<h3 class="mb-3"><i class="bi bi-diagram-3"></i> {% translate "Quá trình" %}</h3>
 {% endif %}
 
-<a href="{% url 'quy_trinh_list' %}{% if request.GET.khu == 'bac_si' or la_bac_si %}?khu=bac_si{% endif %}" class="small text-muted">&larr; Về danh sách quá trình</a>
+<a href="{% url 'quy_trinh_list' %}{% if request.GET.khu == 'bac_si' or la_bac_si %}?khu=bac_si{% endif %}" class="small text-muted">&larr; {% translate "Về danh sách quá trình" %}</a>
 
 {% if qt.la_tai_kham %}
 <div class="alert alert-danger d-flex align-items-start gap-2 mt-2 mb-0">
     <i class="bi bi-exclamation-triangle-fill"></i>
-    <div><strong>Tái khám sau phản ứng.</strong> Lý do: {{ qt.lich_hen.ghi_chu }}</div>
+    <div><strong>{% translate "Tái khám sau phản ứng." %}</strong> {% translate "Lý do:" %} {{ qt.lich_hen.ghi_chu }}</div>
 </div>
 {% endif %}
 
@@ -30,42 +31,51 @@
     <div class="col-lg-4">
         <div class="card shadow-sm mb-3">
             <div class="card-body">
-                <h6 class="text-primary">Thông tin</h6>
-                <p class="mb-1"><strong>Khách hàng:</strong> {{ kh.ho_ten }}</p>
-                <p class="mb-1"><strong>Điện thoại:</strong> {{ kh.so_dien_thoai }}</p>
-                <p class="mb-1"><strong>Ngày hẹn:</strong> {{ qt.lich_hen.ngay_hen|date:"d/m/Y" }}</p>
-                <p class="mb-1"><strong>Vắc-xin đăng ký:</strong> {{ qt.lich_hen.vac_xin.ten|default:"—" }}</p>
-                <p class="mb-1"><strong>Lô xuất:</strong> {{ qt.lo.so_lo|default:"—" }}</p>
-                <p class="mb-0"><strong>Thanh toán:</strong>
-                    {% if qt.thanh_toan %}{{ qt.thanh_toan.tong_tien|floatformat:0 }} đ ({{ qt.thanh_toan.get_phuong_thuc_display }}){% else %}—{% endif %}</p>
+                <h6 class="text-primary">{% translate "Thông tin" %}</h6>
+                <p class="mb-1"><strong>{% translate "Khách hàng:" %}</strong> {{ kh.ho_ten }}</p>
+                <p class="mb-1"><strong>{% translate "Điện thoại:" %}</strong> {{ kh.so_dien_thoai }}</p>
+                <p class="mb-1"><strong>{% translate "Ngày hẹn:" %}</strong> {{ qt.lich_hen.ngay_hen|date:"d/m/Y" }}</p>
+                <p class="mb-1"><strong>{% translate "Vắc-xin đăng ký:" %}</strong> {{ qt.lich_hen.vac_xin.ten|default:"—" }}</p>
+                <p class="mb-1"><strong>{% translate "Lô xuất:" %}</strong> {{ qt.lo.so_lo|default:"—" }}</p>
+                    {% if qt.thanh_toan %}{{ qt.thanh_toan.tong_tien|floatformat:0 }} đ (
+                        {% if qt.thanh_toan.phuong_thuc == 'tien_mat' %}{% translate "Tiền mặt" %}
+                        {% elif qt.thanh_toan.phuong_thuc == 'chuyen_khoan' %}{% translate "Chuyển khoản" %}
+                        {% elif qt.thanh_toan.phuong_thuc == 'the' %}{% translate "Quẹt thẻ" %}
+                        {% else %}{{ qt.thanh_toan.get_phuong_thuc_display }}{% endif %}
+                    ){% else %}—{% endif %}
                 {% if qt.thanh_toan %}
                 <button type="button" class="btn btn-sm btn-outline-danger mt-2" data-bs-toggle="modal"
                         data-bs-target="#modalBienLai" data-pdf="{% url 'phieu_thanh_toan_pdf' qt.thanh_toan.id %}">
-                    <i class="bi bi-receipt"></i> Xem phiếu thu
+                    <i class="bi bi-receipt"></i> {% translate "Xem phiếu thu" %}
                 </button>
                 {% endif %}
                 {% if sang_loc %}
                 <hr class="my-2">
-                <p class="mb-1"><strong>Sàng lọc:</strong> {{ sang_loc.get_ket_luan_display }}</p>
-                <p class="mb-0 small text-muted">Nhiệt độ {{ sang_loc.nhiet_do|default:"-" }}°C · Mạch {{ sang_loc.mach|default:"-" }} · HA {{ sang_loc.huyet_ap|default:"-" }}
-                    {% if sang_loc.bac_si %}<br>BS: {{ sang_loc.bac_si.get_full_name|default:sang_loc.bac_si.username }}{% endif %}</p>
-                {% if sang_loc.tien_su_benh %}<p class="mb-0 small"><strong>Tiền sử:</strong> {{ sang_loc.tien_su_benh }}</p>{% endif %}
-                {% if sang_loc.di_ung %}<p class="mb-0 small"><strong>Dị ứng:</strong> {{ sang_loc.di_ung }}</p>{% endif %}
-                {% if sang_loc.benh_di_truyen %}<p class="mb-0 small"><strong>Di truyền:</strong> {{ sang_loc.benh_di_truyen }}</p>{% endif %}
-                {% if sang_loc.dang_dung_thuoc %}<p class="mb-0 small"><strong>Đang dùng thuốc:</strong> {{ sang_loc.thuoc_dang_dung|default:"Có" }}</p>{% endif %}
+                 <p class="mb-1"><strong>{% translate "Sàng lọc:" %}</strong>
+                    {% if sang_loc.ket_luan == 'dat' %}{% translate "Đủ điều kiện tiêm" %}
+                    {% elif sang_loc.ket_luan == 'hoan' %}{% translate "Hoãn tiêm" %}
+                    {% elif sang_loc.ket_luan == 'chong' %}{% translate "Chống chỉ định" %}
+                    {% else %}{{ sang_loc.get_ket_luan_display }}{% endif %}
+                 </p>
+                <p class="mb-0 small text-muted">{% translate "Nhiệt độ" %} {{ sang_loc.nhiet_do|default:"-" }}°C · {% translate "Mạch" %} {{ sang_loc.mach|default:"-" }} · {% translate "HA" %} {{ sang_loc.huyet_ap|default:"-" }}
+                    {% if sang_loc.bac_si %}<br>{% translate "BS:" %} {{ sang_loc.bac_si.get_full_name|default:sang_loc.bac_si.username }}{% endif %}</p>
+                {% if sang_loc.tien_su_benh %}<p class="mb-0 small"><strong>{% translate "Tiền sử:" %}</strong> {{ sang_loc.tien_su_benh }}</p>{% endif %}
+                {% if sang_loc.di_ung %}<p class="mb-0 small"><strong>{% translate "Dị ứng:" %}</strong> {{ sang_loc.di_ung }}</p>{% endif %}
+                {% if sang_loc.benh_di_truyen %}<p class="mb-0 small"><strong>{% translate "Di truyền:" %}</strong> {{ sang_loc.benh_di_truyen }}</p>{% endif %}
+                {% if sang_loc.dang_dung_thuoc %}<p class="mb-0 small"><strong>{% translate "Đang dùng thuốc:" %}</strong> {% if sang_loc.thuoc_dang_dung %}{{ sang_loc.thuoc_dang_dung }}{% else %}{% translate "Có" %}{% endif %}</p>{% endif %}
                 {% endif %}
             </div>
         </div>
 
         <div class="card shadow-sm">
-            <div class="card-header bg-white"><strong>Tiến trình</strong></div>
+            <div class="card-header bg-white"><strong>{% translate "Tiến trình" %}</strong></div>
             <ul class="list-group list-group-flush">
                 {% for b in timeline %}
                 <li class="list-group-item d-flex align-items-center gap-2">
                     {% if b.xong %}<i class="bi bi-check-circle-fill text-success"></i>
                     {% elif b.hien_tai %}<i class="bi bi-arrow-right-circle-fill text-primary"></i>
                     {% else %}<i class="bi bi-circle text-muted"></i>{% endif %}
-                    <span class="{% if b.hien_tai %}fw-semibold{% elif not b.xong %}text-muted{% endif %}">{{ b.so }}. {{ b.ten }}</span>
+                    <span class="{% if b.hien_tai %}fw-semibold{% elif not b.xong %}text-muted{% endif %}">{{ b.so }}. {% translate b.ten %}</span>
                 </li>
                 {% endfor %}
             </ul>
@@ -75,7 +85,7 @@
     <!-- Thao tac theo buoc -->
     <div class="col-lg-8">
         <div class="card shadow-sm">
-            <div class="card-header bg-white"><strong>Bước hiện tại: {{ qt.ten_giai_doan }}</strong></div>
+            <div class="card-header bg-white"><strong>{% translate "Bước hiện tại:" %} {% translate qt.ten_giai_doan %}</strong></div>
             <div class="card-body">
 
                 {# ----- 1-3: Le tan tiep don ----- #}
@@ -84,148 +94,152 @@
                 <form method="post" action="{% url 'qt_tiep_don' qt.id %}">{% csrf_token %}
                     <button class="btn btn-outline-success">
                         <i class="bi bi-check-lg"></i>
-                        {% if qt.giai_doan == 1 %}Xác nhận khách đã tới
-                        {% elif qt.giai_doan == 2 %}Xác nhận khách đang chờ
-                        {% else %}Xác nhận đã vào phòng khám{% endif %}
+                        {% if qt.giai_doan == 1 %}{% translate "Xác nhận khách đã tới" %}
+                        {% elif qt.giai_doan == 2 %}{% translate "Xác nhận khách đang chờ" %}
+                        {% else %}{% translate "Xác nhận đã vào phòng khám" %}{% endif %}
                     </button>
                 </form>
-                {% else %}<div class="alert alert-info mb-0">Đang chờ <strong>lễ tân</strong> tiếp đón.</div>{% endif %}
+                {% else %}<div class="alert alert-info mb-0">{% blocktranslate %}Đang chờ <strong>lễ tân</strong> tiếp đón.{% endblocktranslate %}</div>{% endif %}
 
                 {# ----- 4: Bac si sang loc / kham (tai kham) ----- #}
                 {% elif qt.giai_doan == 4 %}
                 {% if qt.la_tai_kham %}
                 {% if user.is_superuser or la_bac_si %}
-                <p>Bác sĩ khám lại sau phản ứng. Ghi nhận kết quả rồi hoàn tất.</p>
+                <p>{% translate "Bác sĩ khám lại sau phản ứng. Ghi nhận kết quả rồi hoàn tất." %}</p>
                 <form method="post" action="{% url 'qt_kham' qt.id %}">{% csrf_token %}
-                    <label class="form-label small mb-1">Kết quả khám / ghi chú</label>
-                    <textarea name="ket_qua" class="form-control mb-2" rows="3" placeholder="Tình trạng hiện tại, kết luận, hướng dẫn..."></textarea>
-                    <button class="btn btn-outline-success"><i class="bi bi-clipboard2-check"></i> Hoàn tất khám</button>
+                    <label class="form-label small mb-1">{% translate "Kết quả khám / ghi chú" %}</label>
+                    <textarea name="ket_qua" class="form-control mb-2" rows="3" placeholder="{% translate 'Tình trạng hiện tại, kết luận, hướng dẫn...' %}"></textarea>
+                    <button class="btn btn-outline-success"><i class="bi bi-clipboard2-check"></i> {% translate "Hoàn tất khám" %}</button>
                 </form>
-                {% else %}<div class="alert alert-info mb-0">Đang chờ <strong>bác sĩ</strong> khám.</div>{% endif %}
+                {% else %}<div class="alert alert-info mb-0">{% blocktranslate %}Đang chờ <strong>bác sĩ</strong> khám.{% endblocktranslate %}</div>{% endif %}
                 {% elif sang_loc and sang_loc.ket_luan != 'dat' %}
                 <div class="alert alert-danger mb-0"><i class="bi bi-x-octagon"></i>
-                    Kết luận sàng lọc: <strong>{{ sang_loc.get_ket_luan_display }}</strong> — lịch hẹn đã hủy.
-                    {% if sang_loc.ly_do_hoan %}<br>Lý do hoãn: {{ sang_loc.ly_do_hoan }}{% endif %}
-                    {% if sang_loc.ket_luan == 'chong' and sang_loc.ly_do_chong %}<br>Lý do chống chỉ định: {% if sang_loc.ly_do_chong == 'khac' %}{{ sang_loc.ly_do_chong_khac }}{% else %}{{ sang_loc.get_ly_do_chong_display }}{% endif %}{% endif %}
-                    {% if sang_loc.ghi_chu %}<br>Ghi chú: {{ sang_loc.ghi_chu }}{% endif %}
+                    {% translate "Kết luận sàng lọc:" %} <strong>
+                        {% if sang_loc.ket_luan == 'dat' %}{% translate "Đủ điều kiện tiêm" %}
+                        {% elif sang_loc.ket_luan == 'hoan' %}{% translate "Hoãn tiêm" %}
+                        {% elif sang_loc.ket_luan == 'chong' %}{% translate "Chống chỉ định" %}
+                        {% else %}{{ sang_loc.get_ket_luan_display }}{% endif %}
+                    </strong> — {% translate "lịch hẹn đã hủy." %}
+                    {% if sang_loc.ly_do_hoan %}<br>{% translate "Lý do hoãn:" %} {{ sang_loc.ly_do_hoan }}{% endif %}
+                    {% if sang_loc.ket_luan == 'chong' and sang_loc.ly_do_chong %}<br>{% translate "Lý do chống chỉ định:" %} {% if sang_loc.ly_do_chong == 'khac' %}{{ sang_loc.ly_do_chong_khac }}{% else %}{% translate sang_loc.get_ly_do_chong_display %}{% endif %}{% endif %}
+                    {% if sang_loc.ghi_chu %}<br>{% translate "Ghi chú:" %} {{ sang_loc.ghi_chu }}{% endif %}
                 </div>
                 {% elif user.is_superuser or la_bac_si %}
-                <p>Bác sĩ khám sàng lọc trước tiêm.</p>
+                <p>{% translate "Bác sĩ khám sàng lọc trước tiêm." %}</p>
                 <form method="post" action="{% url 'qt_sang_loc' qt.id %}" class="row g-2">{% csrf_token %}
-                    <div class="col-md-4"><label class="form-label small mb-0">Nhiệt độ (°C)</label><input type="number" step="0.1" name="nhiet_do" class="form-control"></div>
-                    <div class="col-md-4"><label class="form-label small mb-0">Mạch (lần/phút)</label><input type="number" name="mach" class="form-control"></div>
-                    <div class="col-md-4"><label class="form-label small mb-0">Huyết áp</label><input type="text" name="huyet_ap" class="form-control" placeholder="120/80"></div>
-                    <div class="col-md-6"><label class="form-label small mb-0">Tiền sử bệnh</label><input type="text" name="tien_su_benh" class="form-control" placeholder="Vd: hen, tim mạch..."></div>
-                    <div class="col-md-6"><label class="form-label small mb-0">Dị ứng</label><input type="text" name="di_ung" class="form-control" placeholder="Vd: dị ứng thuốc, thức ăn..."></div>
-                    <div class="col-md-6"><label class="form-label small mb-0">Bệnh di truyền</label><input type="text" name="benh_di_truyen" class="form-control"></div>
+                    <div class="col-md-4"><label class="form-label small mb-0">{% translate "Nhiệt độ (°C)" %}</label><input type="number" step="0.1" name="nhiet_do" class="form-control"></div>
+                    <div class="col-md-4"><label class="form-label small mb-0">{% translate "Mạch (lần/phút)" %}</label><input type="number" name="mach" class="form-control"></div>
+                    <div class="col-md-4"><label class="form-label small mb-0">{% translate "Huyết áp" %}</label><input type="text" name="huyet_ap" class="form-control" placeholder="120/80"></div>
+                    <div class="col-md-6"><label class="form-label small mb-0">{% translate "Tiền sử bệnh" %}</label><input type="text" name="tien_su_benh" class="form-control" placeholder="{% translate 'Vd: hen, tim mạch...' %}"></div>
+                    <div class="col-md-6"><label class="form-label small mb-0">{% translate "Dị ứng" %}</label><input type="text" name="di_ung" class="form-control" placeholder="{% translate 'Vd: dị ứng thuốc, thức ăn...' %}"></div>
+                    <div class="col-md-6"><label class="form-label small mb-0">{% translate "Bệnh di truyền" %}</label><input type="text" name="benh_di_truyen" class="form-control"></div>
                     <div class="col-md-6 d-flex align-items-center pt-3">
                         <div class="form-check">
                             <input type="checkbox" name="dang_dung_thuoc" id="chk_thuoc" class="form-check-input">
-                            <label class="form-check-label" for="chk_thuoc">Đang sử dụng thuốc</label>
+                            <label class="form-check-label" for="chk_thuoc">{% translate "Đang sử dụng thuốc" %}</label>
                         </div>
                     </div>
                     <div class="col-12" id="o_thuoc" style="display:none">
-                        <label class="form-label small mb-0">Thuốc đang sử dụng</label>
-                        <input type="text" name="thuoc_dang_dung" class="form-control" placeholder="Liệt kê thuốc đang dùng">
+                        <label class="form-label small mb-0">{% translate "Thuốc đang sử dụng" %}</label>
+                        <input type="text" name="thuoc_dang_dung" class="form-control" placeholder="{% translate 'Liệt kê thuốc đang dùng' %}">
                     </div>
-                    <div class="col-md-6"><label class="form-label small mb-0">Kết luận</label><select name="ket_luan" id="sl_ket_luan" class="form-select">
-                        <option value="dat">Đủ điều kiện tiêm</option><option value="hoan">Hoãn tiêm</option><option value="chong">Chống chỉ định</option></select></div>
+                    <div class="col-md-6"><label class="form-label small mb-0">{% translate "Kết luận" %}</label><select name="ket_luan" id="sl_ket_luan" class="form-select">
+                        <option value="dat">{% translate "Đủ điều kiện tiêm" %}</option><option value="hoan">{% translate "Hoãn tiêm" %}</option><option value="chong">{% translate "Chống chỉ định" %}</option></select></div>
                     <div class="col-12" id="o_ly_do_hoan" style="display:none">
-                        <label class="form-label small mb-0">Lý do hoãn</label>
-                        <input type="text" name="ly_do_hoan" class="form-control" placeholder="Vd: đang sốt, mới ốm dậy...">
+                        <label class="form-label small mb-0">{% translate "Lý do hoãn" %}</label>
+                        <input type="text" name="ly_do_hoan" class="form-control" placeholder="{% translate 'Vd: đang sốt, mới ốm dậy...' %}">
                     </div>
                     <div class="col-12" id="o_chong" style="display:none">
-                        <label class="form-label small mb-0">Lý do chống chỉ định</label>
+                        <label class="form-label small mb-0">{% translate "Lý do chống chỉ định" %}</label>
                         <select name="ly_do_chong" id="sl_ly_do_chong" class="form-select">
-                            <option value="">-- Chọn lý do --</option>
-                            {% for ma, ten in ly_do_chong_choices %}<option value="{{ ma }}">{{ ten }}</option>{% endfor %}
+                            <option value="">-- {% translate "Chọn lý do" %} --</option>
+                            {% for ma, ten in ly_do_chong_choices %}<option value="{{ ma }}">{% translate ten %}</option>{% endfor %}
                         </select>
                     </div>
                     <div class="col-12" id="o_chong_khac" style="display:none">
-                        <label class="form-label small mb-0">Lý do khác (nhập tay)</label>
-                        <input type="text" name="ly_do_chong_khac" class="form-control" placeholder="Nhập lý do chống chỉ định khác">
+                        <label class="form-label small mb-0">{% translate "Lý do khác (nhập tay)" %}</label>
+                        <input type="text" name="ly_do_chong_khac" class="form-control" placeholder="{% translate 'Nhập lý do chống chỉ định khác' %}">
                     </div>
-                    <div class="col-12"><label class="form-label small mb-0">Ghi chú</label><input type="text" name="ghi_chu" class="form-control"></div>
-                    <div class="col-12"><button class="btn btn-outline-success"><i class="bi bi-clipboard2-check"></i> Lưu phiếu sàng lọc</button>
-                        <span class="small text-muted ms-2">"Đủ điều kiện" → sang thanh toán; Hoãn/Chống → hủy lịch.</span></div>
+                    <div class="col-12"><label class="form-label small mb-0">{% translate "Ghi chú" %}</label><input type="text" name="ghi_chu" class="form-control"></div>
+                    <div class="col-12"><button class="btn btn-outline-success"><i class="bi bi-clipboard2-check"></i> {% translate "Lưu phiếu sàng lọc" %}</button>
+                        <span class="small text-muted ms-2">{% translate '"Đủ điều kiện" → sang thanh toán; Hoãn/Chống → hủy lịch.' %}</span></div>
                 </form>
-                {% else %}<div class="alert alert-info mb-0">Đang chờ <strong>bác sĩ</strong> khám sàng lọc.</div>{% endif %}
+                {% else %}<div class="alert alert-info mb-0">{% blocktranslate %}Đang chờ <strong>bác sĩ</strong> khám sàng lọc.{% endblocktranslate %}</div>{% endif %}
 
                 {# ----- 5: Le tan thanh toan ----- #}
                 {% elif qt.giai_doan == 5 %}
                 {% if user.is_superuser or la_le_tan %}
-                <p>Thu tiền cho đơn: <strong>{{ qt.vac_xin.ten }}</strong> —
+                <p>{% translate "Thu tiền cho đơn:" %} <strong>{{ qt.vac_xin.ten }}</strong> —
                     <span class="text-danger fw-bold">{{ qt.vac_xin.gia|floatformat:0 }} đ</span></p>
                 <form method="post" action="{% url 'qt_thanh_toan' qt.id %}" class="d-flex gap-2">{% csrf_token %}
                     <select name="phuong_thuc" class="form-select">
-                        <option value="tien_mat">Tiền mặt</option>
-                        <option value="chuyen_khoan">Chuyển khoản</option>
-                        <option value="the">Quẹt thẻ</option>
+                        <option value="tien_mat">{% translate "Tiền mặt" %}</option>
+                        <option value="chuyen_khoan">{% translate "Chuyển khoản" %}</option>
+                        <option value="the">{% translate "Quẹt thẻ" %}</option>
                     </select>
-                    <button class="btn btn-outline-primary text-nowrap"><i class="bi bi-cash-coin"></i> Xác nhận thanh toán</button>
+                    <button class="btn btn-outline-primary text-nowrap"><i class="bi bi-cash-coin"></i> {% translate "Xác nhận thanh toán" %}</button>
                 </form>
-                {% else %}<div class="alert alert-info mb-0">Đang chờ <strong>lễ tân</strong> thu tiền.</div>{% endif %}
+                {% else %}<div class="alert alert-info mb-0">{% blocktranslate %}Đang chờ <strong>lễ tân</strong> thu tiền.{% endblocktranslate %}</div>{% endif %}
 
                 {# ----- 6: Thu kho xuat kho ----- #}
                 {% elif qt.giai_doan == 6 %}
                 {% if user.is_superuser or la_thu_kho %}
-                <p>Xuất kho vắc-xin <strong>{{ qt.vac_xin.ten }}</strong> (trừ tồn 1 liều).</p>
+                <p>{% blocktranslate with ten=qt.vac_xin.ten %}Xuất kho vắc-xin <strong>{{ ten }}</strong> (trừ tồn 1 liều).{% endblocktranslate %}</p>
                 {% if los %}
                 <form method="post" action="{% url 'qt_xuat_kho' qt.id %}" class="d-flex gap-2">{% csrf_token %}
                     <select name="lo" class="form-select" required>
-                        <option value="">-- Chọn lô --</option>
-                        {% for lo in los %}<option value="{{ lo.id }}">Lô {{ lo.so_lo }} — tồn {{ lo.so_luong_ton }} — HSD {{ lo.han_su_dung|date:"d/m/Y" }}</option>{% endfor %}
+                        <option value="">-- {% translate "Chọn lô" %} --</option>
+                        {% for lo in los %}<option value="{{ lo.id }}">{% translate "Lô" %} {{ lo.so_lo }} — {% translate "tồn" %} {{ lo.so_luong_ton }} — {% translate "HSD" %} {{ lo.han_su_dung|date:"d/m/Y" }}</option>{% endfor %}
                     </select>
-                    <button class="btn btn-outline-primary text-nowrap"><i class="bi bi-box-arrow-up"></i> Xuất kho</button>
+                    <button class="btn btn-outline-primary text-nowrap"><i class="bi bi-box-arrow-up"></i> {% translate "Xuất kho" %}</button>
                 </form>
-                {% else %}<div class="alert alert-warning mb-0">Không có lô còn tồn cho vắc-xin này. Vui lòng nhập kho trong Quản trị.</div>{% endif %}
-                {% else %}<div class="alert alert-info mb-0">Đang chờ <strong>thủ kho</strong> xuất kho.</div>{% endif %}
+                {% else %}<div class="alert alert-warning mb-0">{% translate "Không có lô còn tồn cho vắc-xin này. Vui lòng nhập kho trong Quản trị." %}</div>{% endif %}
+                {% else %}<div class="alert alert-info mb-0">{% blocktranslate %}Đang chờ <strong>thủ kho</strong> xuất kho.{% endblocktranslate %}</div>{% endif %}
 
                 {# ----- 7: Dieu duong nhan vac-xin + tiem ----- #}
                 {% elif qt.giai_doan == 7 %}
                 {% if user.is_superuser or la_dieu_duong %}
                     {% if phieu_xuat and not phieu_xuat.nguoi_nhan %}
-                    <p>Điều dưỡng <strong>xác nhận đã nhận vắc-xin</strong> từ kho (để hoàn tất phiếu xuất của thủ kho) trước khi tiêm.</p>
+                    <p>{% blocktranslate %}Điều dưỡng <strong>xác nhận đã nhận vắc-xin</strong> từ kho (để hoàn tất phiếu xuất của thủ kho) trước khi tiêm.{% endblocktranslate %}</p>
                     <form method="post" action="{% url 'qt_nhan_vacxin' qt.id %}">{% csrf_token %}
-                        <button class="btn btn-outline-success"><i class="bi bi-box-arrow-in-down"></i> Xác nhận đã nhận vắc-xin</button>
+                        <button class="btn btn-outline-success"><i class="bi bi-box-arrow-in-down"></i> {% translate "Xác nhận đã nhận vắc-xin" %}</button>
                     </form>
                     {% else %}
-                    {% if phieu_xuat.nguoi_nhan %}<p class="small text-success mb-2"><i class="bi bi-check-circle"></i> Đã nhận vắc-xin từ kho.</p>{% endif %}
-                    <p>Điều dưỡng thực hiện tiêm và ghi nhận.</p>
+                    {% if phieu_xuat.nguoi_nhan %}<p class="small text-success mb-2"><i class="bi bi-check-circle"></i> {% translate "Đã nhận vắc-xin từ kho." %}</p>{% endif %}
+                    <p>{% translate "Điều dưỡng thực hiện tiêm và ghi nhận." %}</p>
                     <form method="post" action="{% url 'qt_tiem' qt.id %}" class="d-flex gap-2">{% csrf_token %}
-                        <input type="text" name="vi_tri_tiem" class="form-control" placeholder="Vị trí tiêm (vd: bắp tay trái)">
-                        <button class="btn btn-outline-primary text-nowrap"><i class="bi bi-syringe"></i> Đã tiêm</button>
+                        <input type="text" name="vi_tri_tiem" class="form-control" placeholder="{% translate 'Vị trí tiêm (vd: bắp tay trái)' %}">
+                        <button class="btn btn-outline-primary text-nowrap"><i class="bi bi-syringe"></i> {% translate "Đã tiêm" %}</button>
                     </form>
                     {% endif %}
-                {% else %}<div class="alert alert-info mb-0">Đang chờ <strong>điều dưỡng</strong> tiêm.</div>{% endif %}
+                {% else %}<div class="alert alert-info mb-0">{% blocktranslate %}Đang chờ <strong>điều dưỡng</strong> tiêm.{% endblocktranslate %}</div>{% endif %}
 
                 {# ----- 8: Dieu duong theo doi ----- #}
                 {% elif qt.giai_doan == 8 %}
-                <p class="mb-2"><i class="bi bi-syringe text-success"></i> Đã tiêm
-                    <strong>{{ qt.mui_tiem.vac_xin.ten }}</strong> (mũi {{ qt.mui_tiem.mui_so }}) ngày {{ qt.mui_tiem.ngay_tiem|date:"d/m/Y" }}.</p>
+                <p class="mb-2"><i class="bi bi-syringe text-success"></i> {% blocktranslate with ten=qt.mui_tiem.vac_xin.ten mui_so=qt.mui_tiem.mui_so ngay=qt.mui_tiem.ngay_tiem|date:"d/m/Y" %}Đã tiêm <strong>{{ ten }}</strong> (mũi {{ mui_so }}) ngày {{ ngay }}.{% endblocktranslate %}</p>
                 {% if qt.mui_tiem.ngay_hen_mui_ke %}
-                <div class="alert alert-warning py-2"><i class="bi bi-bell"></i> Nhắc mũi kế tiếp: <strong>{{ qt.mui_tiem.ngay_hen_mui_ke|date:"d/m/Y" }}</strong></div>
+                <div class="alert alert-warning py-2"><i class="bi bi-bell"></i> {% blocktranslate with ngay_ke=qt.mui_tiem.ngay_hen_mui_ke|date:"d/m/Y" %}Nhắc mũi kế tiếp: <strong>{{ ngay_ke }}</strong>{% endblocktranslate %}</div>
                 {% endif %}
                 {% if user.is_superuser or la_dieu_duong %}
-                <hr><p class="mb-2"><strong>Ghi nhận theo dõi sau tiêm</strong></p>
+                <hr><p class="mb-2"><strong>{% translate "Ghi nhận theo dõi sau tiêm" %}</strong></p>
                 <form method="post" action="{% url 'qt_theo_doi' qt.id %}" class="row g-2">{% csrf_token %}
                     <div class="col-md-4"><select name="thoi_diem" class="form-select">
-                        <option value="30p">Sau 30 phút</option><option value="24h">Sau 24 giờ</option>
-                        <option value="48h">Sau 48 giờ</option><option value="khac">Khác</option></select></div>
-                    <div class="col-md-4"><input type="number" step="0.1" name="nhiet_do" class="form-control" placeholder="Nhiệt độ °C"></div>
+                        <option value="30p">{% translate "Sau 30 phút" %}</option><option value="24h">{% translate "Sau 24 giờ" %}</option>
+                        <option value="48h">{% translate "Sau 48 giờ" %}</option><option value="khac">{% translate "Khác" %}</option></select></div>
+                    <div class="col-md-4"><input type="number" step="0.1" name="nhiet_do" class="form-control" placeholder="{% translate 'Nhiệt độ °C' %}"></div>
                     <div class="col-md-4"><select name="muc_do" class="form-select">
-                        <option value="binh_thuong">Bình thường</option><option value="nhe">Phản ứng nhẹ</option>
-                        <option value="can_chu_y">Cần chú ý</option><option value="nghiem_trong">Nghiêm trọng</option></select></div>
-                    <div class="col-12"><input type="text" name="trieu_chung" class="form-control" placeholder="Triệu chứng (nếu có)"></div>
-                    <div class="col-12"><button class="btn btn-outline-primary"><i class="bi bi-clipboard2-heart"></i> Lưu theo dõi & hoàn tất</button></div>
+                        <option value="binh_thuong">{% translate "Bình thường" %}</option><option value="nhe">{% translate "Phản ứng nhẹ" %}</option>
+                        <option value="can_chu_y">{% translate "Cần chú ý" %}</option><option value="nghiem_trong">{% translate "Nghiêm trọng" %}</option></select></div>
+                    <div class="col-12"><input type="text" name="trieu_chung" class="form-control" placeholder="{% translate 'Triệu chứng (nếu có)' %}"></div>
+                    <div class="col-12"><button class="btn btn-outline-primary"><i class="bi bi-clipboard2-heart"></i> {% translate "Lưu theo dõi & hoàn tất" %}</button></div>
                 </form>
-                {% else %}<div class="alert alert-info mb-0">Đang chờ <strong>điều dưỡng</strong> ghi nhận theo dõi sau tiêm.</div>{% endif %}
+                {% else %}<div class="alert alert-info mb-0">{% blocktranslate %}Đang chờ <strong>điều dưỡng</strong> ghi nhận theo dõi sau tiêm.{% endblocktranslate %}</div>{% endif %}
 
                 {# ----- 10: Hoan tat ----- #}
                 {% else %}
-                <div class="alert alert-success mb-2"><i class="bi bi-check-all"></i> Quy trình đã hoàn tất.</div>
+                <div class="alert alert-success mb-2"><i class="bi bi-check-all"></i> {% translate "Quy trình đã hoàn tất." %}</div>
                 {% if qt.mui_tiem.ngay_hen_mui_ke %}
-                <div class="alert alert-warning py-2 mb-0"><i class="bi bi-bell"></i> Nhắc mũi kế tiếp: <strong>{{ qt.mui_tiem.ngay_hen_mui_ke|date:"d/m/Y" }}</strong></div>
+                <div class="alert alert-warning py-2 mb-0"><i class="bi bi-bell"></i> {% blocktranslate with ngay_ke=qt.mui_tiem.ngay_hen_mui_ke|date:"d/m/Y" %}Nhắc mũi kế tiếp: <strong>{{ ngay_ke }}</strong>{% endblocktranslate %}</div>
                 {% endif %}
                 {% endif %}
             </div>
@@ -233,18 +247,30 @@
 
         {% if theo_doi %}
         <div class="card shadow-sm mt-3">
-            <div class="card-header bg-white"><strong>Theo dõi sau tiêm</strong></div>
+            <div class="card-header bg-white"><strong>{% translate "Theo dõi sau tiêm" %}</strong></div>
             <div class="table-responsive">
                 <table class="table table-sm mb-0">
-                    <thead class="table-light"><tr><th>Ngày</th><th>Thời điểm</th><th>Nhiệt độ</th><th>Triệu chứng</th><th>Mức độ</th></tr></thead>
+                    <thead class="table-light"><tr><th>{% translate "Ngày" %}</th><th>{% translate "Thời điểm" %}</th><th>{% translate "Nhiệt độ" %}</th><th>{% translate "Triệu chứng" %}</th><th>{% translate "Mức độ" %}</th></tr></thead>
                     <tbody>
                         {% for td in theo_doi %}
                         <tr>
                             <td>{{ td.ngay_ghi_nhan|date:"d/m H:i" }}</td>
-                            <td>{{ td.get_thoi_diem_display }}</td>
+                             <td>
+                                {% if td.thoi_diem == '30p' %}{% translate "Sau 30 phút" %}
+                                {% elif td.thoi_diem == '24h' %}{% translate "Sau 24 giờ" %}
+                                {% elif td.thoi_diem == '48h' %}{% translate "Sau 48 giờ" %}
+                                {% elif td.thoi_diem == 'khac' %}{% translate "Khác" %}
+                                {% else %}{{ td.get_thoi_diem_display }}{% endif %}
+                             </td>
                             <td>{{ td.nhiet_do|default:"-" }}</td>
                             <td>{{ td.trieu_chung|default:"-" }}</td>
-                            <td>{{ td.get_muc_do_display }}</td>
+                             <td>
+                                {% if td.muc_do == 'binh_thuong' %}{% translate "Bình thường" %}
+                                {% elif td.muc_do == 'nhe' %}{% translate "Phản ứng nhẹ" %}
+                                {% elif td.muc_do == 'can_chu_y' %}{% translate "Cần chú ý" %}
+                                {% elif td.muc_do == 'nghiem_trong' %}{% translate "Nghiêm trọng" %}
+                                {% else %}{{ td.get_muc_do_display }}{% endif %}
+                             </td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -261,12 +287,12 @@
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title mb-0"><i class="bi bi-receipt text-danger"></i> Phiếu thu tiền</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                <h5 class="modal-title mb-0"><i class="bi bi-receipt text-danger"></i> {% translate "Phiếu thu tiền" %}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% translate 'Đóng' %}"></button>
             </div>
             <div class="modal-body p-0">
                 <iframe id="bienLaiFrame" data-src="{% url 'phieu_thanh_toan_pdf' qt.thanh_toan.id %}"
-                        title="Xem trước phiếu thu" style="width:100%; height:75vh; border:0;"></iframe>
+                        title="{% translate 'Xem trước phiếu thu' %}" style="width:100%; height:75vh; border:0;"></iframe>
             </div>
         </div>
     </div>

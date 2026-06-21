@@ -1,16 +1,17 @@
 {% extends 'base.html' %}
-{% block title %}Sửa khách hàng{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Sửa khách hàng" %}{% endblock %}
 
 {% block content %}
-<h3 class="mb-3"><i class="bi bi-clipboard-check"></i> Khu vực Lễ tân</h3>
+<h3 class="mb-3"><i class="bi bi-clipboard-check"></i> {% translate "Khu vực Lễ tân" %}</h3>
 {% include 'core/le_tan/_nav.html' %}
 
-<a href="{% url 'le_tan_khach_hang' %}" class="small text-muted">&larr; Về danh sách khách hàng</a>
+<a href="{% url 'le_tan_khach_hang' %}" class="small text-muted">&larr; {% translate "Về danh sách khách hàng" %}</a>
 
 <div class="row justify-content-center mt-1">
     <div class="col-md-8 col-lg-7">
         <div class="card shadow-sm">
-            <div class="card-header bg-white"><strong><i class="bi bi-pencil-square"></i> Sửa thông tin: {{ kh.ho_ten }}</strong></div>
+            <div class="card-header bg-white"><strong><i class="bi bi-pencil-square"></i> {% translate "Sửa thông tin" %}: {{ kh.ho_ten }}</strong></div>
             <div class="card-body">
                 {% if form.non_field_errors %}
                 <div class="alert alert-danger py-2 small">{{ form.non_field_errors|striptags }}</div>
@@ -25,8 +26,8 @@
                         <div class="col-md-4">{% include 'core/_field.html' with field=form.cccd %}</div>
                         <div class="col-md-4">{% include 'core/_field.html' with field=form.dia_chi %}</div>
                     </div>
-                    <button class="btn btn-outline-primary"><i class="bi bi-check-circle"></i> Lưu thay đổi</button>
-                    <a href="{% url 'le_tan_khach_hang' %}" class="btn btn-outline-secondary">Hủy</a>
+                    <button class="btn btn-outline-primary"><i class="bi bi-check-circle"></i> {% translate "Lưu thay đổi" %}</button>
+                    <a href="{% url 'le_tan_khach_hang' %}" class="btn btn-outline-secondary">{% translate "Hủy" %}</a>
                 </form>
             </div>
         </div>

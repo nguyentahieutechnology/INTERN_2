@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
-{% load static %}
-{% block title %}Chứng nhận tiêm chủng - {{ kh.ho_ten }}{% endblock %}
+{% load static i18n %}
+{% block title %}{% translate "Chứng nhận tiêm chủng" %} - {{ kh.ho_ten }}{% endblock %}
 
 {% block content %}
 <div class="container py-3">
@@ -12,38 +12,44 @@
                     <div class="mb-2">
                         <img src="{% static 'core/logo.svg' %}" alt="Logo" width="50" height="50" style="filter: brightness(0) invert(1);">
                     </div>
-                    <h4 class="mb-0 text-uppercase fw-bold">Chứng nhận tiêm chủng</h4>
-                    <p class="mb-0 opacity-75 small">HỆ THỐNG QUẢN LÝ TIÊM CHỦNG VACCINE CLINIC</p>
+                    <h4 class="mb-0 text-uppercase fw-bold">{% translate "Chứng nhận tiêm chủng" %}</h4>
+                    <p class="mb-0 opacity-75 small">{% translate "HỆ THỐNG QUẢN LÝ TIÊM CHỦNG VACCINE CLINIC" %}</p>
                 </div>
                 
                 <div class="card-body p-4">
                     <!-- Thong tin ca nhan -->
                     <div class="text-center mb-4">
                         <h5 class="fw-bold mb-1">{{ kh.ho_ten }}</h5>
-                        <p class="text-muted small">Ngày sinh: {{ kh.ngay_sinh|date:"d/m/Y" }} · Giới tính: {{ kh.gioi_tinh }}</p>
+                        <p class="text-muted small">
+                            {% translate "Ngày sinh" %}: {{ kh.ngay_sinh|date:"d/m/Y" }} ·
+                            {% translate "Giới tính" %}:
+                            {% if kh.gioi_tinh == 'Nam' %}{% translate "Nam" %}
+                            {% elif kh.gioi_tinh == 'Nu' or kh.gioi_tinh == 'Nữ' %}{% translate "Nữ" %}
+                            {% else %}{% translate "Khác" %}{% endif %}
+                        </p>
                         <div class="d-inline-block px-3 py-1 bg-success bg-opacity-10 text-success rounded-pill small fw-bold">
-                            <i class="bi bi-patch-check-fill"></i> ĐÃ XÁC THỰC HỆ THỐNG
+                            <i class="bi bi-patch-check-fill"></i> {% translate "ĐÃ XÁC THỰC HỆ THỐNG" %}
                         </div>
                     </div>
 
                     <div class="row g-3 mb-4 small">
                         <div class="col-6">
-                            <div class="text-muted">Số điện thoại</div>
+                            <div class="text-muted">{% translate "Số điện thoại" %}</div>
                             <div class="fw-semibold">{{ kh.so_dien_thoai }}</div>
                         </div>
                         <div class="col-6">
-                            <div class="text-muted">Số CCCD/CMND</div>
+                            <div class="text-muted">{% translate "Số CCCD/CMND" %}</div>
                             <div class="fw-semibold">{{ kh.cccd|default:"—" }}</div>
                         </div>
                         <div class="col-12">
-                            <div class="text-muted">Địa chỉ</div>
+                            <div class="text-muted">{% translate "Địa chỉ" %}</div>
                             <div class="fw-semibold">{{ kh.dia_chi|default:"—" }}</div>
                         </div>
                     </div>
 
                     <!-- Lich su tiem -->
                     <h6 class="border-bottom pb-2 mb-3 fw-bold text-secondary">
-                        <i class="bi bi-journal-medical"></i> LỊCH SỬ TIÊM CHỦNG
+                        <i class="bi bi-journal-medical"></i> {% translate "LỊCH SỬ TIÊM CHỦNG" %}
                     </h6>
                     
                     <div class="timeline-certificate">
@@ -57,28 +63,28 @@
                                 <div class="fw-bold text-primary">{{ m.vac_xin.ten }}</div>
                                 <div class="small text-muted mb-1">{{ m.vac_xin.phong_benh }}</div>
                                 <div class="d-flex justify-content-between align-items-center mt-2">
-                                    <span class="small bg-white px-2 py-0 border rounded">Mũi {{ m.mui_so }}</span>
-                                    <span class="small text-muted">Lô: {{ m.lo.so_lo|default:"-" }}</span>
+                                    <span class="small bg-white px-2 py-0 border rounded">{% translate "Mũi" %} {{ m.mui_so }}</span>
+                                    <span class="small text-muted">{% translate "Lô" %}: {{ m.lo.so_lo|default:"-" }}</span>
                                 </div>
                             </div>
                         </div>
                         {% empty %}
                         <div class="text-center py-4 text-muted">
                             <i class="bi bi-info-circle fs-2 d-block mb-2"></i>
-                            Chưa có dữ liệu tiêm chủng trên hệ thống.
+                            {% translate "Chưa có dữ liệu tiêm chủng trên hệ thống." %}
                         </div>
                         {% endfor %}
                     </div>
 
                     <div class="mt-4 pt-3 border-top text-center text-muted small">
-                        <p class="mb-0">Chứng nhận này được tạo tự động bởi hệ thống Vaccine Clinic.</p>
-                        <p class="mb-0">Ngày trích xuất: {{ today|date:"d/m/Y H:i" }}</p>
+                        <p class="mb-0">{% translate "Chứng nhận này được tạo tự động bởi hệ thống Vaccine Clinic." %}</p>
+                        <p class="mb-0">{% translate "Ngày trích xuất" %}: {{ today|date:"d/m/Y H:i" }}</p>
                     </div>
                 </div>
                 
                 <div class="card-footer bg-light text-center py-3">
                     <button class="btn btn-sm btn-outline-secondary" onclick="window.print()">
-                        <i class="bi bi-printer"></i> In chứng nhận
+                        <i class="bi bi-printer"></i> {% translate "In chứng nhận" %}
                     </button>
                 </div>
             </div>

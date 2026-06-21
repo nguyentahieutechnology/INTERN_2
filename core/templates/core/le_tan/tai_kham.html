@@ -1,15 +1,16 @@
 {% extends 'base.html' %}
-{% block title %}Lễ tân - Đăng ký tái khám{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Lễ tân - Đăng ký tái khám" %}{% endblock %}
 
 {% block content %}
-<h3 class="mb-3"><i class="bi bi-clipboard-check"></i> Khu vực Lễ tân</h3>
+<h3 class="mb-3"><i class="bi bi-clipboard-check"></i> {% translate "Khu vực Lễ tân" %}</h3>
 {% include 'core/le_tan/_nav.html' %}
 
 <div class="row justify-content-center">
     <div class="col-md-7 col-lg-6">
         <div class="card shadow-sm">
             <div class="card-header bg-danger text-white">
-                <strong><i class="bi bi-clipboard2-pulse"></i> Đăng ký tái khám sau phản ứng</strong>
+                <strong><i class="bi bi-clipboard2-pulse"></i> {% translate "Đăng ký tái khám sau phản ứng" %}</strong>
             </div>
             <div class="card-body p-4">
                 {% if form.non_field_errors %}
@@ -23,11 +24,11 @@
                     {% include 'core/_field.html' with field=form.gio_hen %}
                     {% include 'core/_field.html' with field=form.ghi_chu %}
                     <button type="submit" class="btn btn-outline-danger w-100">
-                        <i class="bi bi-check-circle"></i> Đặt lịch tái khám
+                        <i class="bi bi-check-circle"></i> {% translate "Đặt lịch tái khám" %}
                     </button>
                 </form>
                 <div class="text-center mt-3">
-                    <a href="{% url 'le_tan_lich_hen' %}" class="small text-muted">&larr; Về danh sách lịch hẹn</a>
+                    <a href="{% url 'le_tan_lich_hen' %}" class="small text-muted">&larr; {% translate "Về danh sách lịch hẹn" %}</a>
                 </div>
             </div>
         </div>

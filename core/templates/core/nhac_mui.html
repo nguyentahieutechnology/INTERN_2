@@ -1,28 +1,29 @@
 {% extends 'base.html' %}
-{% block title %}Báo cáo nhắc mũi{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Báo cáo nhắc mũi" %}{% endblock %}
 
 {% block content %}
 {% if la_le_tan or user.is_superuser %}
-<h3 class="mb-3"><i class="bi bi-clipboard-check"></i> Khu vực Lễ tân</h3>
+<h3 class="mb-3"><i class="bi bi-clipboard-check"></i> {% translate "Khu vực Lễ tân" %}</h3>
 {% include 'core/le_tan/_nav.html' %}
 {% endif %}
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h3 class="mb-0"><i class="bi bi-bell"></i> Khách đến hạn nhắc mũi</h3>
+    <h3 class="mb-0"><i class="bi bi-bell"></i> {% translate "Khách đến hạn nhắc mũi" %}</h3>
     <form method="get" class="d-flex align-items-center gap-2">
-        <label class="form-label mb-0 small">Trong vòng</label>
+        <label class="form-label mb-0 small">{% translate "Trong vòng" %}</label>
         <select name="days" class="form-select form-select-sm" style="width:auto" onchange="this.form.submit()">
-            <option value="7" {% if so_ngay == 7 %}selected{% endif %}>7 ngày tới</option>
-            <option value="14" {% if so_ngay == 14 %}selected{% endif %}>14 ngày tới</option>
-            <option value="30" {% if so_ngay == 30 %}selected{% endif %}>30 ngày tới</option>
-            <option value="all" {% if so_ngay == 'all' %}selected{% endif %}>Tất cả</option>
+            <option value="7" {% if so_ngay == 7 %}selected{% endif %}>{% translate "7 ngày tới" %}</option>
+            <option value="14" {% if so_ngay == 14 %}selected{% endif %}>{% translate "14 ngày tới" %}</option>
+            <option value="30" {% if so_ngay == 30 %}selected{% endif %}>{% translate "30 ngày tới" %}</option>
+            <option value="all" {% if so_ngay == 'all' %}selected{% endif %}>{% translate "Tất cả" %}</option>
         </select>
     </form>
 </div>
 
 <div class="row g-2 mb-3">
-    <div class="col-auto"><span class="badge text-bg-secondary fs-6">Tổng: {{ tong }}</span></div>
-    <div class="col-auto"><span class="badge text-bg-danger fs-6">Quá hạn: {{ so_qua_han }}</span></div>
-    <div class="col-auto"><span class="badge text-bg-warning fs-6">Sắp tới: {{ so_sap_toi }}</span></div>
+    <div class="col-auto"><span class="badge text-bg-secondary fs-6">{% translate "Tổng:" %} {{ tong }}</span></div>
+    <div class="col-auto"><span class="badge text-bg-danger fs-6">{% translate "Quá hạn:" %} {{ so_qua_han }}</span></div>
+    <div class="col-auto"><span class="badge text-bg-warning fs-6">{% translate "Sắp tới:" %} {{ so_sap_toi }}</span></div>
 </div>
 
 <div class="card shadow-sm">
@@ -31,13 +32,13 @@
             <thead class="table-light">
                 <tr>
                     <th>#</th>
-                    <th>Khách hàng</th>
-                    <th>Điện thoại</th>
-                    <th>Mũi kế tiếp</th>
-                    <th>Vắc-xin</th>
-                    <th>Ngày hẹn</th>
-                    <th>Trạng thái</th>
-                    <th>Nhắc</th>
+                    <th>{% translate "Khách hàng" %}</th>
+                    <th>{% translate "Điện thoại" %}</th>
+                    <th>{% translate "Mũi kế tiếp" %}</th>
+                    <th>{% translate "Vắc-xin" %}</th>
+                    <th>{% translate "Ngày hẹn" %}</th>
+                    <th>{% translate "Trạng thái" %}</th>
+                    <th>{% translate "Nhắc" %}</th>
                 </tr>
             </thead>
             <tbody>
@@ -46,30 +47,30 @@
                     <td>{{ forloop.counter }}</td>
                     <td class="fw-semibold">{{ r.khach_hang.ho_ten }}</td>
                     <td>{{ r.khach_hang.so_dien_thoai }}</td>
-                    <td>Mũi {{ r.mui_ke }}</td>
+                    <td>{% translate "Mũi" %} {{ r.mui_ke }}</td>
                     <td>{{ r.vac_xin.ten }}</td>
                     <td>{{ r.ngay_hen|date:"d/m/Y" }}</td>
                     <td>
                         {% if r.qua_han %}
-                            <span class="badge text-bg-danger">Quá hạn {{ r.so_ngay|stringformat:"d"|cut:"-" }} ngày</span>
+                            <span class="badge text-bg-danger">{% blocktranslate with songay=r.so_ngay|stringformat:"d"|cut:"-" %}Quá hạn {{ songay }} ngày{% endblocktranslate %}</span>
                         {% elif r.so_ngay == 0 %}
-                            <span class="badge text-bg-warning text-dark">Hôm nay</span>
+                            <span class="badge text-bg-warning text-dark">{% translate "Hôm nay" %}</span>
                         {% else %}
-                            <span class="badge text-bg-warning text-dark">Còn {{ r.so_ngay }} ngày</span>
+                            <span class="badge text-bg-warning text-dark">{% blocktranslate with songay=r.so_ngay %}Còn {{ songay }} ngày{% endblocktranslate %}</span>
                         {% endif %}
                     </td>
                     <td>
                         <form method="post" action="{% url 'nhac_khach' r.khach_hang.id %}" class="d-inline">{% csrf_token %}
-                            <button class="btn btn-sm btn-outline-primary"><i class="bi bi-bell"></i> Nhắc</button>
+                            <button class="btn btn-sm btn-outline-primary"><i class="bi bi-bell"></i> {% translate "Nhắc" %}</button>
                         </form>
                     </td>
                 </tr>
                 {% empty %}
-                <tr><td colspan="8" class="text-center text-muted py-4">Không có khách nào đến hạn nhắc mũi trong khoảng này.</td></tr>
+                <tr><td colspan="8" class="text-center text-muted py-4">{% translate "Không có khách nào đến hạn nhắc mũi trong khoảng này." %}</td></tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
 </div>
-<p class="text-muted small mt-2">Hôm nay: {{ today|date:"d/m/Y" }}</p>
+<p class="text-muted small mt-2">{% translate "Hôm nay:" %} {{ today|date:"d/m/Y" }}</p>
 {% endblock %}

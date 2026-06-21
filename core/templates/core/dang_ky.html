@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
-{% load static %}
-{% block title %}Đăng ký tài khoản{% endblock %}
+{% load static i18n %}
+{% block title %}{% translate "Đăng ký tài khoản" %}{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
@@ -9,8 +9,8 @@
             <div class="card-body p-4">
                 <div class="text-center mb-3">
                     <img src="{% static 'core/logo.svg' %}" alt="Logo" width="64" height="64">
-                    <h4 class="mt-2">Đăng ký tài khoản</h4>
-                    <p class="text-muted small mb-0">Tạo tài khoản mới để sử dụng hệ thống</p>
+                    <h4 class="mt-2">{% translate "Đăng ký tài khoản" %}</h4>
+                    <p class="text-muted small mb-0">{% translate "Tạo tài khoản mới để sử dụng hệ thống" %}</p>
                 </div>
 
                 {% if form.non_field_errors %}
@@ -32,13 +32,13 @@
                     </div>
                     {% endfor %}
                     <button type="submit" class="btn btn-outline-primary w-100">
-                        <i class="bi bi-person-plus"></i> Đăng ký
+                        <i class="bi bi-person-plus"></i> {% translate "Đăng ký" %}
                     </button>
                 </form>
 
                 <div class="text-center mt-3">
-                    <span class="small text-muted">Đã có tài khoản?</span>
-                    <a href="{% url 'dang_nhap' %}" class="small">Đăng nhập</a>
+                    <span class="small text-muted">{% translate "Đã có tài khoản?" %}</span>
+                    <a href="{% url 'dang_nhap' %}" class="small">{% translate "Đăng nhập" %}</a>
                 </div>
             </div>
         </div>

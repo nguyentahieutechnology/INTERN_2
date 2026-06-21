@@ -1,14 +1,15 @@
 {% extends 'base.html' %}
-{% block title %}Bảng giá{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Bảng giá" %}{% endblock %}
 
 {% block content %}
-<h3 class="mb-3">Bảng giá vắc-xin</h3>
+<h3 class="mb-3">{% translate "Bảng giá vắc-xin" %}</h3>
 
 <div class="input-group mb-3 shadow-sm" style="max-width:440px">
     <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
     <input type="text" id="timVacXin" class="form-control" autocomplete="off"
-           placeholder="Tìm theo tên, phòng bệnh, nước sản xuất...">
-    <button class="btn btn-outline-secondary" type="button" id="xoaTim" title="Xóa"><i class="bi bi-x-lg"></i></button>
+           placeholder="{% translate 'Tìm theo tên, phòng bệnh, nước sản xuất...' %}">
+    <button class="btn btn-outline-secondary" type="button" id="xoaTim" title="{% translate 'Xóa' %}"><i class="bi bi-x-lg"></i></button>
 </div>
 
 <div class="card shadow-sm">
@@ -17,10 +18,10 @@
             <thead class="table-primary">
                 <tr>
                     <th>#</th>
-                    <th>Tên vắc-xin</th>
-                    <th>Phòng bệnh</th>
-                    <th>Nước SX</th>
-                    <th class="text-end">Giá (VND)</th>
+                    <th>{% translate "Tên vắc-xin" %}</th>
+                    <th>{% translate "Phòng bệnh" %}</th>
+                    <th>{% translate "Nước SX" %}</th>
+                    <th class="text-end">{% translate "Giá (VND)" %}</th>
                 </tr>
             </thead>
             <tbody id="bangGiaBody">
@@ -33,16 +34,16 @@
                     <td class="text-end">{{ vx.gia|floatformat:0 }}</td>
                 </tr>
                 {% empty %}
-                <tr><td colspan="5" class="text-center text-muted py-4">Chưa có dữ liệu.</td></tr>
+                <tr><td colspan="5" class="text-center text-muted py-4">{% translate "Chưa có dữ liệu." %}</td></tr>
                 {% endfor %}
                 <tr id="khongCoKetQua" style="display:none">
-                    <td colspan="5" class="text-center text-muted py-4">Không tìm thấy vắc-xin phù hợp.</td>
+                    <td colspan="5" class="text-center text-muted py-4">{% translate "Không tìm thấy vắc-xin phù hợp." %}</td>
                 </tr>
             </tbody>
         </table>
     </div>
 </div>
-<p class="text-muted small mt-2">* Giá có thể thay đổi, vui lòng liên hệ phòng khám để được tư vấn chính xác.</p>
+<p class="text-muted small mt-2">{% translate "* Giá có thể thay đổi, vui lòng liên hệ phòng khám để được tư vấn chính xác." %}</p>
 {% endblock %}
 
 {% block extra_js %}
