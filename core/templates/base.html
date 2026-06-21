@@ -54,6 +54,11 @@
                 transform: translateY(10px);
                 transition: all 0.2s ease-in-out;
             }
+            .navbar-nav .nav-item.dropdown .dropdown-menu.show {
+                opacity: 1;
+                visibility: visible;
+                transform: translateY(0);
+            }
         }
 
         .navbar-brand-med {
@@ -267,12 +272,27 @@
 
 <!-- Submenu for Customers -->
 {% if not user.is_staff %}
-<div class="submenu-bar-med">
+<div class="submenu-bar">
     <div class="container">
-        <ul class="submenu-med">
+        <ul class="submenu">
             <li class="{% if '/dich-vu/' in request.path %}active{% endif %}"><a href="{% url 'dich_vu' %}">Dịch vụ</a></li>
-            <li class="{% if '/vac-xin/' in request.path %}active{% endif %}"><a href="{% url 'vac_xin_tre_em' %}">Vắc-xin</a></li>
-            <li class="{% if '/goi-vac-xin/' in request.path %}active{% endif %}"><a href="{% url 'goi_vac_xin_tre_em' %}">Gói vắc-xin</a></li>
+            
+            <li class="has-dropdown {% if '/vac-xin/' in request.path %}active{% endif %}">
+                <a href="#">Vắc-xin</a>
+                <ul class="dropdown-hover">
+                    <li><a href="{% url 'vac_xin_tre_em' %}">Vắc-xin trẻ em</a></li>
+                    <li><a href="{% url 'vac_xin_nguoi_lon' %}">Vắc-xin người lớn</a></li>
+                </ul>
+            </li>
+            
+            <li class="has-dropdown {% if '/goi-vac-xin/' in request.path %}active{% endif %}">
+                <a href="#">Gói vắc-xin</a>
+                <ul class="dropdown-hover">
+                    <li><a href="{% url 'goi_vac_xin_tre_em' %}">Gói vắc-xin trẻ em</a></li>
+                    <li><a href="{% url 'goi_vac_xin_nguoi_lon' %}">Gói vắc-xin người lớn</a></li>
+                </ul>
+            </li>
+            
             <li class="{% if '/cam-nang/' in request.path %}active{% endif %}"><a href="{% url 'cam_nang' %}">Cẩm nang</a></li>
             <li class="{% if '/bang-gia/' in request.path %}active{% endif %}"><a href="{% url 'bang_gia' %}">Bảng giá</a></li>
             <li class="{% if '/dat-lich/' in request.path %}active{% endif %}"><a href="{% url 'dat_lich' %}">Đặt lịch hẹn</a></li>
