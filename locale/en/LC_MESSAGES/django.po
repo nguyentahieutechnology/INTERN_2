@@ -72,6 +72,9 @@ msgstr "Current step:"
 msgid "Bản thân"
 msgstr "Self"
 
+msgid "Bản đồ & Hệ thống Cơ sở"
+msgstr "Map & Branches"
+
 msgid "Bảng giá"
 msgstr "Price List"
 
@@ -201,6 +204,9 @@ msgstr "Referral"
 msgid "Chọn \"Quay lại để kiểm tra\" sẽ gửi yêu cầu sang lễ tân để đặt lịch tái khám (kèm lý do)."
 msgstr "Selecting \"Go back to verify\" will send a request to reception to schedule a follow-up (with reason)."
 
+msgid "Chọn cơ sở xem bản đồ"
+msgstr "Select a branch to view on map"
+
 msgid "Chọn lô"
 msgstr "Select batch"
 
@@ -273,6 +279,18 @@ msgstr "Remaining:"
 msgid "Có"
 msgstr "Yes"
 
+msgid "Cơ sở Quận 1"
+msgstr "District 1 Branch"
+
+msgid "Cơ sở Quận 10"
+msgstr "District 10 Branch"
+
+msgid "Cơ sở Quận 10:"
+msgstr "District 10 Branch:"
+
+msgid "Cơ sở Quận 1:"
+msgstr "District 1 Branch:"
+
 msgid "Cảnh báo kho vắc-xin"
 msgstr "Vaccine Stock Warning"
 
@@ -326,6 +344,9 @@ msgstr "Revenue over the last 6 months"
 
 msgid "Doanh thu tháng này"
 msgstr "Revenue this month"
+
+msgid "Dẫn đường (Google Maps)"
+msgstr "Directions (Google Maps)"
 
 msgid "Dị ứng"
 msgstr "Allergy"
@@ -386,6 +407,9 @@ msgstr "Appointment time"
 
 msgid "Giờ hẹn (tùy chọn)"
 msgstr "Appointment time (optional)"
+
+msgid "Giờ làm việc:"
+msgstr "Working Hours:"
 
 msgid "Gói tiêm"
 msgstr "Vaccine package"
@@ -477,6 +501,9 @@ msgstr "Expired:"
 msgid "HỆ THỐNG QUẢN LÝ TIÊM CHỦNG VACCINE CLINIC"
 msgstr "VACCINE CLINIC VACCINATION MANAGEMENT SYSTEM"
 
+msgid "Hệ thống Cơ sở"
+msgstr "Clinic Branches"
+
 msgid "Hệ thống Tiêm chủng"
 msgstr "Vaccination System"
 
@@ -518,6 +545,9 @@ msgstr "Print Certificate"
 
 msgid "Kho & hàng chờ"
 msgstr "Warehouse & Queue"
+
+msgid "Khoảng cách đường đi thực tế:"
+msgstr "Actual road distance:"
 
 msgid "Khu vực Bác sĩ"
 msgstr "Doctor area"
@@ -621,8 +651,14 @@ msgstr "No accounts with role \"%(vt)s\""
 msgid "Không có đơn chờ xuất kho."
 msgstr "No orders awaiting stock-out."
 
+msgid "Không hỗ trợ định vị"
+msgstr "Location not supported"
+
 msgid "Không thể đặt lại tài khoản quản trị cấp cao."
 msgstr "Cannot reset a high-level administrator account."
+
+msgid "Không thể định vị"
+msgstr "Unable to locate"
 
 msgid "Không tìm thấy khách hàng."
 msgstr "No customers found."
@@ -638,6 +674,9 @@ msgstr "Screening conclusion:"
 
 msgid "Kết quả khám / ghi chú"
 msgstr "Examination result / notes"
+
+msgid "Liên hệ & Hỗ trợ"
+msgstr "Contact & Support"
 
 msgid "Liệt kê thuốc đang dùng"
 msgstr "List current medications"
@@ -1302,6 +1341,9 @@ msgstr "Username already exists."
 msgid "Tìm"
 msgstr "Search"
 
+msgid "Tìm cơ sở gần nhất"
+msgstr "Find Nearest Branch"
+
 msgid "Tìm theo tên bệnh nhân..."
 msgstr "Search by patient name..."
 
@@ -1340,6 +1382,9 @@ msgstr "After creating, you will be taken to the page to add doses (choose vacci
 
 msgid "Tất cả"
 msgstr "All"
+
+msgid "Tất cả các ngày trong tuần"
+msgstr "Every day of the week"
 
 msgid "Tất cả vai trò"
 msgstr "All roles"
@@ -1473,6 +1518,9 @@ msgstr "Back to home"
 msgid "Về đăng nhập"
 msgstr "Back to sign in"
 
+msgid "Vị trí của bạn"
+msgstr "Your location"
+
 msgid "Vị trí tiêm (vd: bắp tay trái)"
 msgstr "Injection site (e.g.: left upper arm)"
 
@@ -1590,6 +1638,9 @@ msgstr "days after the immediately preceding dose"
 msgid "phân quyền"
 msgstr "permissions"
 
+msgid "phút di chuyển"
+msgstr "mins driving"
+
 msgid "quản trị viên"
 msgstr "administrator"
 
@@ -1616,6 +1667,9 @@ msgstr "When you have a fever, an acute illness, or as advised by the doctor aft
 
 msgid "Đang sử dụng thuốc"
 msgstr "Currently taking medication"
+
+msgid "Đang xác định vị trí..."
+msgstr "Determining location..."
 
 msgid "Điều dưỡng"
 msgstr "Nurse"
@@ -1673,6 +1727,9 @@ msgstr "Reset done"
 
 msgid "Đã đến"
 msgstr "Arrived"
+
+msgid "Đã định vị thành công!"
+msgstr "Located successfully!"
 
 msgid "Đóng"
 msgstr "Close"
