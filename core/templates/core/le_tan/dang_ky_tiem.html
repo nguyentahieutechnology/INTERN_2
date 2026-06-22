@@ -1,16 +1,16 @@
 {% extends 'base.html' %}
-{% load static %}
-{% block title %}Lễ tân - Đăng ký tiêm{% endblock %}
+{% load static i18n %}
+{% block title %}{% translate "Lễ tân" %} - {% translate "Đăng ký tiêm" %}{% endblock %}
 
 {% block content %}
-<h3 class="mb-3"><i class="bi bi-clipboard-check"></i> Khu vực Lễ tân</h3>
+<h3 class="mb-3"><i class="bi bi-clipboard-check"></i> {% translate "Khu vực Lễ tân" %}</h3>
 {% include 'core/le_tan/_nav.html' %}
 
 <div class="row justify-content-center">
     <div class="col-md-8 col-lg-7">
         <div class="card shadow-sm">
             <div class="card-body p-4">
-                <h5 class="mb-3"><i class="bi bi-clipboard-plus text-primary"></i> Đăng ký tiêm cho khách (tại quầy)</h5>
+                <h5 class="mb-3"><i class="bi bi-clipboard-plus text-primary"></i> {% translate "Đăng ký tiêm cho khách (tại quầy)" %}</h5>
 
                 {% if form.non_field_errors %}
                 <div class="alert alert-danger py-2 small">{{ form.non_field_errors|striptags }}</div>
@@ -30,11 +30,11 @@
 
                     {# Hinh thuc chi dinh (radio) #}
                     <div class="mb-3">
-                        <label class="form-label d-block">{{ form.loai_chi_dinh.label }}</label>
+                        <label class="form-label d-block">{% translate form.loai_chi_dinh.label %}</label>
                         {% for radio in form.loai_chi_dinh %}
                         <div class="form-check form-check-inline">
-                            {{ radio.tag }}
-                            <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                             {{ radio.tag }}
+                             <label class="form-check-label" for="{{ radio.id_for_label }}">{% translate radio.choice_label %}</label>
                         </div>
                         {% endfor %}
                     </div>
@@ -47,7 +47,7 @@
                     {% include 'core/_field.html' with field=form.ghi_chu %}
 
                     <button type="submit" class="btn btn-outline-primary w-100">
-                        <i class="bi bi-check-circle"></i> Đăng ký tiêm
+                        <i class="bi bi-check-circle"></i> {% translate "Đăng ký tiêm" %}
                     </button>
                 </form>
             </div>

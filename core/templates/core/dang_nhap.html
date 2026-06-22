@@ -1,55 +1,55 @@
 {% extends 'base.html' %}
-{% load static %}
-{% block title %}Đăng nhập{% endblock %}
+{% load static i18n %}
+{% block title %}{% translate "Đăng nhập" %}{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-5 col-lg-4">
         <div class="mt-4 mb-2">
-            <a href="{% url 'index' %}" class="small text-muted"><i class="bi bi-arrow-left"></i> Về trang chủ</a>
+            <a href="{% url 'index' %}" class="small text-muted"><i class="bi bi-arrow-left"></i> {% translate "Về trang chủ" %}</a>
         </div>
         <div class="card shadow-sm">
             <div class="card-body p-4">
                 <div class="text-center mb-3">
                     <img src="{% static 'core/logo.svg' %}" alt="Logo" width="64" height="64">
-                    <h4 class="mt-2">Đăng nhập hệ thống</h4>
-                    <p class="text-muted small mb-0">Quản lý phòng khám tiêm chủng</p>
+                    <h4 class="mt-2">{% translate "Đăng nhập hệ thống" %}</h4>
+                    <p class="text-muted small mb-0">{% translate "Quản lý phòng khám tiêm chủng" %}</p>
                 </div>
 
                 {% if form.errors %}
                 <div class="alert alert-danger py-2 small">
                     <i class="bi bi-exclamation-triangle"></i>
-                    Tên đăng nhập hoặc mật khẩu không đúng. Vui lòng thử lại.
+                    {% translate "Tên đăng nhập hoặc mật khẩu không đúng. Vui lòng thử lại." %}
                 </div>
                 {% endif %}
 
                 <form method="post" action="{% url 'dang_nhap' %}">
                     {% csrf_token %}
                     <div class="mb-3">
-                        <label class="form-label" for="id_username">Tên đăng nhập</label>
+                        <label class="form-label" for="id_username">{% translate "Tên đăng nhập" %}</label>
                         <input type="text" name="username" id="id_username"
                                class="form-control" autofocus required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label" for="id_password">Mật khẩu</label>
+                        <label class="form-label" for="id_password">{% translate "Mật khẩu" %}</label>
                         <input type="password" name="password" id="id_password"
                                class="form-control" required>
                     </div>
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <div class="form-check mb-0">
                             <input type="checkbox" name="ghi_nho" id="id_ghi_nho" class="form-check-input">
-                            <label class="form-check-label" for="id_ghi_nho">Ghi nhớ đăng nhập</label>
+                            <label class="form-check-label" for="id_ghi_nho">{% translate "Ghi nhớ đăng nhập" %}</label>
                         </div>
-                        <a href="{% url 'dang_ky' %}" class="small">Đăng ký</a>
+                        <a href="{% url 'dang_ky' %}" class="small">{% translate "Đăng ký" %}</a>
                     </div>
                     <input type="hidden" name="next" value="{{ next }}">
                     <button type="submit" class="btn btn-outline-primary w-100">
-                        <i class="bi bi-box-arrow-in-right"></i> Đăng nhập
+                        <i class="bi bi-box-arrow-in-right"></i> {% translate "Đăng nhập" %}
                     </button>
                 </form>
 
                 <div class="text-center mt-3">
-                    <a href="{% url 'quen_mat_khau' %}" class="small">Quên mật khẩu?</a>
+                    <a href="{% url 'quen_mat_khau' %}" class="small">{% translate "Quên mật khẩu?" %}</a>
                 </div>
             </div>
         </div>

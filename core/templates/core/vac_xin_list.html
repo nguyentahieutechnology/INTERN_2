@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% block title %}{{ tieu_de }}{% endblock %}
 
 {% block content %}
@@ -11,18 +12,18 @@
         <div class="card h-100 shadow-sm">
             <div class="card-body">
                 <h6 class="card-title text-primary">{{ vx.ten }}</h6>
-                <p class="small mb-1"><i class="bi bi-virus"></i> Phòng: {{ vx.phong_benh }}</p>
+                <p class="small mb-1"><i class="bi bi-virus"></i> {% translate "Phòng:" %} {{ vx.phong_benh }}</p>
                 <p class="small text-muted mb-1">{{ vx.nha_san_xuat }} &mdash; {{ vx.nuoc_san_xuat }}</p>
                 <p class="small text-muted mb-2">
-                    Độ tuổi: {{ vx.do_tuoi_min_thang }} &ndash; {{ vx.do_tuoi_max_thang }} tháng
+                    {% translate "Độ tuổi:" %} {{ vx.do_tuoi_min_thang }} &ndash; {{ vx.do_tuoi_max_thang }} {% translate "tháng" %}
                 </p>
                 <span class="badge text-bg-success">{{ vx.gia|floatformat:0 }} đ</span>
-                <a href="{% url 'dat_lich' %}" class="btn btn-sm btn-outline-primary float-end">Đặt lịch</a>
+                <a href="{% url 'dat_lich' %}" class="btn btn-sm btn-outline-primary float-end">{% translate "Đặt lịch" %}</a>
             </div>
         </div>
     </div>
     {% empty %}
-    <p class="text-muted">Chưa có vắc-xin trong nhóm này.</p>
+    <p class="text-muted">{% translate "Chưa có vắc-xin trong nhóm này." %}</p>
     {% endfor %}
 </div>
 {% endblock %}

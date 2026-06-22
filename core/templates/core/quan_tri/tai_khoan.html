@@ -1,21 +1,22 @@
 {% extends 'base.html' %}
-{% block title %}Quản trị - Tài khoản{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "Quản trị - Tài khoản" %}{% endblock %}
 
 {% block content %}
-<h3 class="mb-3"><i class="bi bi-shield-lock"></i> Khu vực Quản trị</h3>
+<h3 class="mb-3"><i class="bi bi-shield-lock"></i> {% trans "Khu vực Quản trị" %}</h3>
 {% include 'core/quan_tri/_nav.html' %}
 
 <div class="row g-3">
     <!-- Form tao tai khoan -->
     <div class="col-lg-5">
         <div class="card shadow-sm">
-            <div class="card-header bg-white"><strong><i class="bi bi-person-plus"></i> Tạo tài khoản nhân viên</strong></div>
+            <div class="card-header bg-white"><strong><i class="bi bi-person-plus"></i> {% trans "Tạo tài khoản nhân viên" %}</strong></div>
             <div class="card-body">
                 {% if form.non_field_errors %}<div class="alert alert-danger py-2 small">{{ form.non_field_errors|striptags }}</div>{% endif %}
                 <form method="post" action="{% url 'quan_tri_tai_khoan' %}">
                     {% csrf_token %}
                     {% for field in form %}{% include 'core/_field.html' with field=field %}{% endfor %}
-                    <button class="btn btn-outline-primary w-100"><i class="bi bi-check-circle"></i> Tạo tài khoản</button>
+                    <button class="btn btn-outline-primary w-100"><i class="bi bi-check-circle"></i> {% trans "Tạo tài khoản" %}</button>
                 </form>
             </div>
         </div>
@@ -25,13 +26,13 @@
     <div class="col-lg-7">
         <div class="card shadow-sm">
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                <strong>Tài khoản nhân viên{% if vai_tro %} — {% if vai_tro == 'tat_ca' %}Tất cả vai trò{% else %}{{ vai_tro }}{% endif %} ({{ nhan_vien.count }}){% endif %}</strong>
+                <strong>{% trans "Tài khoản nhân viên" %}{% if vai_tro %} — {% if vai_tro == 'tat_ca' %}{% trans "Tất cả vai trò" %}{% else %}{{ vai_tro }}{% endif %} ({{ nhan_vien.count }}){% endif %}</strong>
                 <div class="dropdown">
                     <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-list"></i> Chọn vai trò
+                        <i class="bi bi-list"></i> {% trans "Chọn vai trò" %}
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow">
-                        <li><a class="dropdown-item {% if vai_tro == 'tat_ca' %}active{% endif %}" href="?vai_tro=tat_ca{% if trang_thai %}&trang_thai={{ trang_thai }}{% endif %}"><i class="bi bi-people"></i> Tất cả vai trò</a></li>
+                        <li><a class="dropdown-item {% if vai_tro == 'tat_ca' %}active{% endif %}" href="?vai_tro=tat_ca{% if trang_thai %}&trang_thai={{ trang_thai }}{% endif %}"><i class="bi bi-people"></i> {% trans "Tất cả vai trò" %}</a></li>
                         <li><hr class="dropdown-divider"></li>
                         {% for ma, ten in vai_tro_list %}
                         <li><a class="dropdown-item {% if vai_tro == ma %}active{% endif %}" href="?vai_tro={{ ma }}{% if trang_thai %}&trang_thai={{ trang_thai }}{% endif %}">{{ ten }}</a></li>
@@ -41,42 +42,42 @@
             </div>
             {% if vai_tro %}
             <div class="card-body py-2 border-bottom d-flex align-items-center gap-2">
-                <span class="small text-muted">Trạng thái:</span>
+                <span class="small text-muted">{% trans "Trạng thái:" %}</span>
                 <div class="btn-group btn-group-sm" role="group">
-                    <a href="?vai_tro={{ vai_tro }}" class="btn btn-outline-secondary {% if not trang_thai %}active{% endif %}">Tất cả</a>
-                    <a href="?vai_tro={{ vai_tro }}&trang_thai=hoat_dong" class="btn btn-outline-success {% if trang_thai == 'hoat_dong' %}active{% endif %}"><i class="bi bi-check-circle"></i> Hoạt động</a>
-                    <a href="?vai_tro={{ vai_tro }}&trang_thai=da_khoa" class="btn btn-outline-danger {% if trang_thai == 'da_khoa' %}active{% endif %}"><i class="bi bi-lock"></i> Đã khóa</a>
+                    <a href="?vai_tro={{ vai_tro }}" class="btn btn-outline-secondary {% if not trang_thai %}active{% endif %}">{% trans "Tất cả" %}</a>
+                    <a href="?vai_tro={{ vai_tro }}&trang_thai=hoat_dong" class="btn btn-outline-success {% if trang_thai == 'hoat_dong' %}active{% endif %}"><i class="bi bi-check-circle"></i> {% trans "Hoạt động" %}</a>
+                    <a href="?vai_tro={{ vai_tro }}&trang_thai=da_khoa" class="btn btn-outline-danger {% if trang_thai == 'da_khoa' %}active{% endif %}"><i class="bi bi-lock"></i> {% trans "Đã khóa" %}</a>
                 </div>
             </div>
             {% endif %}
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light"><tr><th>Tên đăng nhập</th><th>Họ tên</th><th>Vai trò</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
+                    <thead class="table-light"><tr><th>{% trans "Tên đăng nhập" %}</th><th>{% trans "Họ tên" %}</th><th>{% trans "Vai trò" %}</th><th>{% trans "Trạng thái" %}</th><th>{% trans "Thao tác" %}</th></tr></thead>
                     <tbody>
                         {% for nv in nhan_vien %}
                         <tr class="{% if not nv.is_active %}table-secondary{% endif %}">
                             <td class="fw-semibold">{{ nv.username }}</td>
                             <td>{{ nv.get_full_name|default:"-" }}</td>
                             <td>
-                                {% if nv.is_superuser %}<span class="badge text-bg-dark">Quản trị (superuser)</span>
+                                {% if nv.is_superuser %}<span class="badge text-bg-dark">{% trans "Quản trị (superuser)" %}</span>
                                 {% else %}
-                                    {% for g in nv.groups.all %}<span class="badge text-bg-info">{{ g.name }}</span> {% empty %}<span class="text-muted">—</span>{% endfor %}
+                                    {% for g in nv.groups.all %}<span class="badge text-bg-info">{% if g.name == 'Le tan' %}{% trans "Lễ tân" %}{% elif g.name == 'Bac si' %}{% trans "Bác sĩ" %}{% elif g.name == 'Dieu duong' %}{% trans "Điều dưỡng" %}{% elif g.name == 'Thu kho' %}{% trans "Thủ kho" %}{% elif g.name == 'Quan tri' %}{% trans "Quản trị" %}{% elif g.name == 'Khach hang' %}{% trans "Khách hàng" %}{% else %}{{ g.name }}{% endif %}</span> {% empty %}<span class="text-muted">—</span>{% endfor %}
                                 {% endif %}
                             </td>
                             <td>
-                                {% if nv.is_active %}<span class="badge text-bg-success">Hoạt động</span>
-                                {% else %}<span class="badge text-bg-danger">Đã khóa</span>{% endif %}
+                                {% if nv.is_active %}<span class="badge text-bg-success">{% trans "Hoạt động" %}</span>
+                                {% else %}<span class="badge text-bg-danger">{% trans "Đã khóa" %}</span>{% endif %}
                             </td>
                             <td>
                                 {% if nv.is_superuser or nv == user %}
                                 <span class="text-muted small">—</span>
                                 {% else %}
-                                <a href="{% url 'quan_tri_tai_khoan_sua' nv.id %}" class="btn btn-sm btn-outline-primary">Sửa</a>
+                                <a href="{% url 'quan_tri_tai_khoan_sua' nv.id %}" class="btn btn-sm btn-outline-primary">{% trans "Sửa" %}</a>
                                 <form method="post" action="{% url 'quan_tri_tai_khoan_khoa' nv.id %}" class="d-inline">{% csrf_token %}
                                     {% if nv.is_active %}
-                                    <button class="btn btn-sm btn-outline-danger" onclick="return confirm('Khóa tài khoản {{ nv.username }}? Sẽ không đăng nhập được.')">Khóa</button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="return confirm('{% blocktrans with u=nv.username %}Khóa tài khoản {{ u }}? Sẽ không đăng nhập được.{% endblocktrans %}')">{% trans "Khóa" %}</button>
                                     {% else %}
-                                    <button class="btn btn-sm btn-outline-success">Mở khóa</button>
+                                    <button class="btn btn-sm btn-outline-success">{% trans "Mở khóa" %}</button>
                                     {% endif %}
                                 </form>
                                 {% endif %}
@@ -84,9 +85,9 @@
                         </tr>
                         {% empty %}
                         <tr><td colspan="5" class="text-center text-muted py-4">
-                            {% if vai_tro == 'tat_ca' %}Chưa có tài khoản nhân viên nào{% if trang_thai == 'hoat_dong' %} đang hoạt động{% elif trang_thai == 'da_khoa' %} đã khóa{% endif %}.
-                            {% elif vai_tro %}Không có tài khoản nào thuộc vai trò "{{ vai_tro }}"{% if trang_thai == 'hoat_dong' %} đang hoạt động{% elif trang_thai == 'da_khoa' %} đã khóa{% endif %}.
-                            {% else %}<i class="bi bi-arrow-up-right"></i> Bấm <strong>"Chọn vai trò"</strong> để xem danh sách tài khoản.{% endif %}
+                            {% if vai_tro == 'tat_ca' %}{% trans "Chưa có tài khoản nhân viên nào" %}{% if trang_thai == 'hoat_dong' %} {% trans "đang hoạt động" %}{% elif trang_thai == 'da_khoa' %} {% trans "đã khóa" %}{% endif %}.
+                            {% elif vai_tro %}{% blocktrans with vt=vai_tro %}Không có tài khoản nào thuộc vai trò "{{ vt }}"{% endblocktrans %}{% if trang_thai == 'hoat_dong' %} {% trans "đang hoạt động" %}{% elif trang_thai == 'da_khoa' %} {% trans "đã khóa" %}{% endif %}.
+                            {% else %}<i class="bi bi-arrow-up-right"></i> {% trans "Bấm" %} <strong>"{% trans "Chọn vai trò" %}"</strong> {% trans "để xem danh sách tài khoản." %}{% endif %}
                         </td></tr>
                         {% endfor %}
                     </tbody>

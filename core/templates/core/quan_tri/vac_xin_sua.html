@@ -1,23 +1,24 @@
 {% extends 'base.html' %}
-{% block title %}Sửa vắc-xin{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "Sửa vắc-xin" %}{% endblock %}
 
 {% block content %}
-<h3 class="mb-3"><i class="bi bi-shield-lock"></i> Khu vực Quản trị</h3>
+<h3 class="mb-3"><i class="bi bi-shield-lock"></i> {% trans "Khu vực Quản trị" %}</h3>
 {% include 'core/quan_tri/_nav.html' %}
 
-<a href="{% url 'quan_tri_vac_xin' %}" class="small text-muted">&larr; Về danh mục vắc-xin</a>
+<a href="{% url 'quan_tri_vac_xin' %}" class="small text-muted">&larr; {% trans "Về danh mục vắc-xin" %}</a>
 
 <div class="row justify-content-center mt-1">
     <div class="col-md-7 col-lg-6">
         <div class="card shadow-sm">
-            <div class="card-header bg-white"><strong><i class="bi bi-pencil-square"></i> Sửa: {{ vx.ten }}</strong></div>
+            <div class="card-header bg-white"><strong><i class="bi bi-pencil-square"></i> {% blocktrans with t=vx.ten %}Sửa: {{ t }}{% endblocktrans %}</strong></div>
             <div class="card-body">
                 {% if form.non_field_errors %}<div class="alert alert-danger py-2 small">{{ form.non_field_errors|striptags }}</div>{% endif %}
                 <form method="post" action="{% url 'quan_tri_vac_xin_sua' vx.id %}">
                     {% csrf_token %}
                     {% for field in form %}{% include 'core/_field.html' with field=field %}{% endfor %}
-                    <button class="btn btn-outline-primary"><i class="bi bi-check-circle"></i> Lưu thay đổi</button>
-                    <a href="{% url 'quan_tri_vac_xin' %}" class="btn btn-outline-secondary">Hủy</a>
+                    <button class="btn btn-outline-primary"><i class="bi bi-check-circle"></i> {% trans "Lưu thay đổi" %}</button>
+                    <a href="{% url 'quan_tri_vac_xin' %}" class="btn btn-outline-secondary">{% trans "Hủy" %}</a>
                 </form>
             </div>
         </div>

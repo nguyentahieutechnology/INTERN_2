@@ -1,6 +1,7 @@
 from datetime import date, datetime, timedelta
 from functools import wraps
 
+# Trigger hot-reload for translations again
 import openpyxl
 
 from django.contrib import messages
@@ -13,6 +14,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 from django.views.decorators.clickjacking import xframe_options_sameorigin
 
 from core.forms import (DangKyForm, DatLichForm, KhachHangForm,
@@ -605,8 +607,8 @@ def vac_xin_tre_em(request):
         do_tuoi_min_thang__lt=TUOI_TRE_EM_MAX_THANG).order_by('ten')
     return render(request, 'core/vac_xin_list.html', {
         'ds': ds,
-        'tieu_de': 'Vắc xin cho trẻ em',
-        'mo_ta': 'Các loại vắc-xin phù hợp cho trẻ sơ sinh và trẻ nhỏ.',
+        'tieu_de': _('Vắc xin cho trẻ em'),
+        'mo_ta': _('Các loại vắc-xin phù hợp cho trẻ sơ sinh và trẻ nhỏ.'),
     })
 
 
@@ -616,8 +618,8 @@ def vac_xin_nguoi_lon(request):
         do_tuoi_max_thang__gte=TUOI_NGUOI_LON_MIN_THANG).order_by('ten')
     return render(request, 'core/vac_xin_list.html', {
         'ds': ds,
-        'tieu_de': 'Vắc xin cho người lớn',
-        'mo_ta': 'Các loại vắc-xin dành cho thanh thiếu niên và người trưởng thành.',
+        'tieu_de': _('Vắc xin cho người lớn'),
+        'mo_ta': _('Các loại vắc-xin dành cho thanh thiếu niên và người trưởng thành.'),
     })
 
 
@@ -625,24 +627,24 @@ def goi_vac_xin(request):
     """Tat ca goi tiem / phac do."""
     ds = PhacDo.objects.prefetch_related('chi_tiet').all()
     return render(request, 'core/goi_vac_xin.html', {
-        'ds': ds, 'tieu_de': 'Gói vắc xin',
-        'mo_ta': 'Các gói tiêm trọn liệu trình theo độ tuổi và nhu cầu.'})
+        'ds': ds, 'tieu_de': _('Gói vắc xin'),
+        'mo_ta': _('Các gói tiêm trọn liệu trình theo độ tuổi và nhu cầu.')})
 
 
 def goi_vac_xin_tre_em(request):
     """Goi tiem cho tre em."""
     ds = PhacDo.objects.filter(nhom='tre_em').prefetch_related('chi_tiet')
     return render(request, 'core/goi_vac_xin.html', {
-        'ds': ds, 'tieu_de': 'Gói vắc xin cho trẻ em',
-        'mo_ta': 'Các gói tiêm dành cho trẻ sơ sinh và trẻ nhỏ.'})
+        'ds': ds, 'tieu_de': _('Gói vắc xin cho trẻ em'),
+        'mo_ta': _('Các gói tiêm dành cho trẻ sơ sinh và trẻ nhỏ.')})
 
 
 def goi_vac_xin_nguoi_lon(request):
     """Goi tiem cho nguoi lon."""
     ds = PhacDo.objects.filter(nhom='nguoi_lon').prefetch_related('chi_tiet')
     return render(request, 'core/goi_vac_xin.html', {
-        'ds': ds, 'tieu_de': 'Gói vắc xin cho người lớn',
-        'mo_ta': 'Các gói tiêm dành cho thanh thiếu niên và người trưởng thành.'})
+        'ds': ds, 'tieu_de': _('Gói vắc xin cho người lớn'),
+        'mo_ta': _('Các gói tiêm dành cho thanh thiếu niên và người trưởng thành.')})
 
 
 def cam_nang(request):
@@ -930,12 +932,19 @@ def le_tan_thong_ke(request):
             yy = today.year
         tt_qs = tt_qs.filter(ngay_thanh_toan__year=yy)
 
+    from django.utils.translation import gettext as _
+    pt_map = {
+        'tien_mat': _('Tiền mặt'),
+        'chuyen_khoan': _('Chuyển khoản'),
+        'the': _('Quẹt thẻ'),
+    }
+
     def vnd(x):
         return format(int(x or 0), ',d').replace(',', '.')
     thanh_toan = [{
         'ngay': timezone.localtime(tt.ngay_thanh_toan).strftime('%d/%m/%Y %H:%M'),
         'khach': tt.khach_hang.ho_ten,
-        'pt': tt.get_phuong_thuc_display(),
+        'pt': pt_map.get(tt.phuong_thuc, tt.get_phuong_thuc_display()),
         'tien': vnd(tt.tong_tien),
     } for tt in tt_qs]
 

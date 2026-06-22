@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% block title %}{{ tieu_de }}{% endblock %}
 
 {% block content %}
@@ -18,16 +19,16 @@
                 <ol class="small mb-2">
                     {% for ct in pd.chi_tiet.all %}
                     <li>{{ ct.vac_xin.ten }}
-                        {% if ct.khoang_cach_ngay %}<span class="text-muted">(cách mũi trước {{ ct.khoang_cach_ngay }} ngày)</span>{% endif %}
+                        {% if ct.khoang_cach_ngay %}<span class="text-muted">({% translate "cách mũi trước" %} {{ ct.khoang_cach_ngay }} {% translate "ngày" %})</span>{% endif %}
                     </li>
                     {% endfor %}
                 </ol>
-                <a href="{% url 'dat_lich' %}" class="btn btn-sm btn-outline-primary">Đăng ký gói này</a>
+                <a href="{% url 'dat_lich' %}" class="btn btn-sm btn-outline-primary">{% translate "Đăng ký gói này" %}</a>
             </div>
         </div>
     </div>
     {% empty %}
-    <p class="text-muted">Chưa có gói vắc-xin nào.</p>
+    <p class="text-muted">{% translate "Chưa có gói vắc-xin nào." %}</p>
     {% endfor %}
 </div>
 {% endblock %}

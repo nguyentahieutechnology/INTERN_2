@@ -1,21 +1,22 @@
 {% extends 'base.html' %}
-{% block title %}Lịch sử khám sàng lọc{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "Lịch sử khám sàng lọc" %}{% endblock %}
 
 {% block content %}
-<h3 class="mb-3"><i class="bi bi-person-vcard"></i> Khu vực Bác sĩ</h3>
+<h3 class="mb-3"><i class="bi bi-person-vcard"></i> {% trans "Khu vực Bác sĩ" %}</h3>
 {% include 'core/bac_si/_nav.html' %}
 
 <form method="get" class="d-flex gap-2 mb-3" style="max-width:420px">
-    <input type="text" name="q" value="{{ q }}" class="form-control form-control-sm" placeholder="Tìm theo tên bệnh nhân...">
-    <button class="btn btn-sm btn-outline-secondary">Tìm</button>
+    <input type="text" name="q" value="{{ q }}" class="form-control form-control-sm" placeholder="{% trans "Tìm theo tên bệnh nhân..." %}">
+    <button class="btn btn-sm btn-outline-secondary">{% trans "Tìm" %}</button>
 </form>
 
 <div class="card shadow-sm">
-    <div class="card-header bg-white"><strong>Lịch sử khám sàng lọc</strong></div>
+    <div class="card-header bg-white"><strong>{% trans "Lịch sử khám sàng lọc" %}</strong></div>
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
             <thead class="table-light">
-                <tr><th>Ngày</th><th>Bệnh nhân</th><th>Nhiệt độ</th><th>Mạch</th><th>Huyết áp</th><th>Kết luận</th><th>Bác sĩ</th></tr>
+                <tr><th>{% trans "Ngày" %}</th><th>{% trans "Bệnh nhân" %}</th><th>{% trans "Nhiệt độ" %}</th><th>{% trans "Mạch" %}</th><th>{% trans "Huyết áp" %}</th><th>{% trans "Kết luận" %}</th><th>{% trans "Bác sĩ" %}</th></tr>
             </thead>
             <tbody>
                 {% for p in ds %}
@@ -26,14 +27,14 @@
                     <td>{{ p.mach|default:"-" }}</td>
                     <td>{{ p.huyet_ap|default:"-" }}</td>
                     <td>
-                        {% if p.ket_luan == 'dat' %}<span class="badge text-bg-success">Đủ điều kiện</span>
-                        {% elif p.ket_luan == 'hoan' %}<span class="badge text-bg-warning text-dark">Hoãn tiêm</span>
-                        {% else %}<span class="badge text-bg-danger">Chống chỉ định</span>{% endif %}
+                        {% if p.ket_luan == 'dat' %}<span class="badge text-bg-success">{% trans "Đủ điều kiện" %}</span>
+                        {% elif p.ket_luan == 'hoan' %}<span class="badge text-bg-warning text-dark">{% trans "Hoãn tiêm" %}</span>
+                        {% else %}<span class="badge text-bg-danger">{% trans "Chống chỉ định" %}</span>{% endif %}
                     </td>
                     <td>{{ p.bac_si.get_full_name|default:p.bac_si.username|default:"-" }}</td>
                 </tr>
                 {% empty %}
-                <tr><td colspan="7" class="text-center text-muted py-4">Chưa có phiếu sàng lọc nào.</td></tr>
+                <tr><td colspan="7" class="text-center text-muted py-4">{% trans "Chưa có phiếu sàng lọc nào." %}</td></tr>
                 {% endfor %}
             </tbody>
         </table>

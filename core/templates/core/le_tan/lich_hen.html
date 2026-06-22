@@ -1,23 +1,24 @@
 {% extends 'base.html' %}
-{% block title %}Lễ tân - Lịch hẹn{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Lễ tân" %} - {% translate "Lịch hẹn" %}{% endblock %}
 
 {% block content %}
-<h3 class="mb-3"><i class="bi bi-clipboard-check"></i> Khu vực Lễ tân</h3>
+<h3 class="mb-3"><i class="bi bi-clipboard-check"></i> {% translate "Khu vực Lễ tân" %}</h3>
 {% include 'core/le_tan/_nav.html' %}
 
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
     {# Loc theo trang thai #}
     <div class="btn-group btn-group-sm">
-        <a href="{% url 'le_tan_lich_hen' %}" class="btn {% if not trang_thai %}btn-outline-primary{% else %}btn-outline-primary{% endif %}">Tất cả</a>
+        <a href="{% url 'le_tan_lich_hen' %}" class="btn {% if not trang_thai %}btn-outline-primary{% else %}btn-outline-primary{% endif %}">{% translate "Tất cả" %}</a>
         {% for ma, ten in cac_trang_thai %}
-        <a href="?trang_thai={{ ma }}" class="btn {% if trang_thai == ma %}btn-outline-primary{% else %}btn-outline-primary{% endif %}">{{ ten }}</a>
+        <a href="?trang_thai={{ ma }}" class="btn {% if trang_thai == ma %}btn-outline-primary{% else %}btn-outline-primary{% endif %}">{% translate ten %}</a>
         {% endfor %}
     </div>
     {# Tim theo ten khach #}
     <form method="get" class="d-flex gap-2">
         {% if trang_thai %}<input type="hidden" name="trang_thai" value="{{ trang_thai }}">{% endif %}
-        <input type="text" name="q" value="{{ q }}" class="form-control form-control-sm" placeholder="Tìm theo tên khách...">
-        <button class="btn btn-sm btn-outline-secondary">Tìm</button>
+        <input type="text" name="q" value="{{ q }}" class="form-control form-control-sm" placeholder="{% translate "Tìm theo tên khách..." %}">
+        <button class="btn btn-sm btn-outline-secondary">{% translate "Tìm" %}</button>
     </form>
 </div>
 
@@ -25,7 +26,7 @@
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
             <thead class="table-light">
-                <tr><th>Khách hàng</th><th>Điện thoại</th><th>Ngày hẹn</th><th>Giờ</th><th>Gói tiêm</th><th>Chỉ định</th><th>Trạng thái</th><th>Thao tác</th></tr>
+                <tr><th>{% translate "Khách hàng" %}</th><th>{% translate "Điện thoại" %}</th><th>{% translate "Ngày hẹn" %}</th><th>{% translate "Giờ" %}</th><th>{% translate "Gói tiêm" %}</th><th>{% translate "Chỉ định" %}</th><th>{% translate "Trạng thái" %}</th><th>{% translate "Thao tác" %}</th></tr>
             </thead>
             <tbody>
                 {% for lh in ds %}
@@ -37,17 +38,16 @@
                     <td>{{ lh.phac_do.ten|default:"-" }}</td>
                     <td>
                         {% if lh.loai_chi_dinh == 'benh_vien' %}
-                            <span class="small">BV: {{ lh.benh_vien }}{% if lh.bac_si_chi_dinh %}<br>BS: {{ lh.bac_si_chi_dinh }}{% endif %}</span>
-                        {% else %}<span class="text-muted small">Khách tự chọn</span>{% endif %}
+                            <span class="small">{% translate "BV" %}: {{ lh.benh_vien }}{% if lh.bac_si_chi_dinh %}<br>{% translate "BS" %}: {{ lh.bac_si_chi_dinh }}{% endif %}</span>
+                        {% else %}<span class="text-muted small">{% translate "Khách tự chọn" %}</span>{% endif %}
                     </td>
                     <td>{% include 'core/le_tan/_badge.html' %}</td>
                     <td>{% include 'core/le_tan/_actions.html' %}</td>
                 </tr>
                 {% empty %}
-                <tr><td colspan="8" class="text-center text-muted py-4">Không có lịch hẹn phù hợp.</td></tr>
+                <tr><td colspan="8" class="text-center text-muted py-4">{% translate "Không có lịch hẹn phù hợp." %}</td></tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
-</div>
-{% endblock %}
+</div>{% endblock %}

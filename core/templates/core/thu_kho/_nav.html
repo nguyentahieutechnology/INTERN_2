@@ -1,22 +1,23 @@
+{% load i18n %}
 <ul class="nav nav-pills mb-3">
     <li class="nav-item">
         <a class="nav-link {% if request.resolver_match.url_name == 'thu_kho_dashboard' %}active{% endif %}"
-           href="{% url 'thu_kho_dashboard' %}"><i class="bi bi-box-seam"></i> Kho &amp; hàng chờ</a>
+           href="{% url 'thu_kho_dashboard' %}"><i class="bi bi-box-seam"></i> {% translate "Kho & hàng chờ" %}</a>
     </li>
     <li class="nav-item">
         <a class="nav-link {% if request.resolver_match.url_name == 'thu_kho_nhap_lich_su' %}active{% endif %}"
-           href="{% url 'thu_kho_nhap_lich_su' %}"><i class="bi bi-box-arrow-in-down"></i> Lịch sử nhập kho</a>
+           href="{% url 'thu_kho_nhap_lich_su' %}"><i class="bi bi-box-arrow-in-down"></i> {% translate "Lịch sử nhập kho" %}</a>
     </li>
     <li class="nav-item">
         <a class="nav-link {% if request.resolver_match.url_name == 'thu_kho_lich_su' %}active{% endif %}"
-           href="{% url 'thu_kho_lich_su' %}"><i class="bi bi-box-arrow-up"></i> Lịch sử xuất kho</a>
+           href="{% url 'thu_kho_lich_su' %}"><i class="bi bi-box-arrow-up"></i> {% translate "Lịch sử xuất kho" %}</a>
     </li>
     <li class="nav-item">
         <a class="nav-link {% if request.resolver_match.url_name == 'thu_kho_huy' %}active{% endif %}"
-           href="{% url 'thu_kho_huy' %}"><i class="bi bi-trash"></i> Hủy vắc-xin</a>
+           href="{% url 'thu_kho_huy' %}"><i class="bi bi-trash"></i> {% translate "Hủy vắc-xin" %}</a>
     </li>
     <li class="nav-item">
         <a class="nav-link {% if request.resolver_match.url_name == 'thu_kho_bao_cao' %}active{% endif %}"
-           href="{% url 'thu_kho_bao_cao' %}"><i class="bi bi-bar-chart"></i> Báo cáo</a>
+           href="{% url 'thu_kho_bao_cao' %}"><i class="bi bi-bar-chart"></i> {% translate "Báo cáo" %}</a>
     </li>
 </ul>

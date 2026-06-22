@@ -1,15 +1,16 @@
 {% extends 'base.html' %}
-{% block title %}Lễ tân - Hỗ trợ{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Lễ tân - Hỗ trợ" %}{% endblock %}
 
 {% block content %}
-<h3 class="mb-3"><i class="bi bi-clipboard-check"></i> Khu vực Lễ tân</h3>
+<h3 class="mb-3"><i class="bi bi-clipboard-check"></i> {% translate "Khu vực Lễ tân" %}</h3>
 {% include 'core/le_tan/_nav.html' %}
 
 <div class="row g-3">
     <!-- Danh sach hoi thoai -->
     <div class="col-lg-4">
         <div class="card shadow-sm">
-            <div class="card-header bg-white"><strong><i class="bi bi-chat-dots"></i> Khách cần hỗ trợ</strong></div>
+            <div class="card-header bg-white"><strong><i class="bi bi-chat-dots"></i> {% translate "Khách cần hỗ trợ" %}</strong></div>
             <div class="list-group list-group-flush" style="max-height:520px; overflow-y:auto">
                 {% for kh in threads %}
                 <a href="?khach={{ kh.id }}"
@@ -22,7 +23,7 @@
                     {% if kh.chua_doc %}<span class="badge text-bg-danger rounded-pill">{{ kh.chua_doc }}</span>{% endif %}
                 </a>
                 {% empty %}
-                <div class="list-group-item text-muted text-center py-4">Chưa có tin nhắn hỗ trợ nào.</div>
+                <div class="list-group-item text-muted text-center py-4">{% translate "Chưa có tin nhắn hỗ trợ nào." %}</div>
                 {% endfor %}
             </div>
         </div>
@@ -39,20 +40,20 @@
                     <div class="small">{{ t.noi_dung }}</div>
                     <div class="text-end" style="font-size:.7rem; opacity:.7">{{ t.ngay|date:"H:i d/m" }}</div>
                 </div>
-                {% empty %}<div class="text-muted text-center my-auto">Chưa có tin nhắn.</div>{% endfor %}
+                {% empty %}<div class="text-muted text-center my-auto">{% translate "Chưa có tin nhắn." %}</div>{% endfor %}
             </div>
             <div class="card-footer bg-white">
                 <form method="post" action="{% url 'le_tan_ho_tro' %}" class="d-flex gap-2">
                     {% csrf_token %}
                     <input type="hidden" name="khach" value="{{ chon.id }}">
-                    <input type="text" name="noi_dung" class="form-control" placeholder="Nhập trả lời..." autocomplete="off" required>
-                    <button class="btn btn-outline-primary text-nowrap"><i class="bi bi-send"></i> Gửi</button>
+                    <input type="text" name="noi_dung" class="form-control" placeholder="{% translate 'Nhập trả lời...' %}" autocomplete="off" required>
+                    <button class="btn btn-outline-primary text-nowrap"><i class="bi bi-send"></i> {% translate "Gửi" %}</button>
                 </form>
             </div>
             {% else %}
             <div class="card-body text-center text-muted py-5">
                 <i class="bi bi-chat-left-dots" style="font-size:2.5rem"></i>
-                <p class="mt-2 mb-0">Chọn một khách hàng bên trái để xem và trả lời tin nhắn.</p>
+                <p class="mt-2 mb-0">{% translate "Chọn một khách hàng bên trái để xem và trả lời tin nhắn." %}</p>
             </div>
             {% endif %}
         </div>

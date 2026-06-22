@@ -1,24 +1,25 @@
 {% extends 'base.html' %}
-{% block title %}Lễ tân - Khách hàng{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Lễ tân" %} - {% translate "Khách hàng" %}{% endblock %}
 
 {% block content %}
-<h3 class="mb-3"><i class="bi bi-clipboard-check"></i> Khu vực Lễ tân</h3>
+<h3 class="mb-3"><i class="bi bi-clipboard-check"></i> {% translate "Khu vực Lễ tân" %}</h3>
 {% include 'core/le_tan/_nav.html' %}
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <form method="get" class="d-flex gap-2">
         <input type="text" name="q" value="{{ q }}" class="form-control form-control-sm"
-               placeholder="Tìm theo tên hoặc số điện thoại...">
-        <button class="btn btn-sm btn-outline-secondary">Tìm</button>
+               placeholder="{% translate "Tìm theo tên hoặc số điện thoại..." %}">
+        <button class="btn btn-sm btn-outline-secondary">{% translate "Tìm" %}</button>
     </form>
     <button class="btn btn-sm btn-outline-success" type="button" data-bs-toggle="collapse" data-bs-target="#formKhach">
-        <i class="bi bi-person-plus"></i> Thêm khách hàng
+        <i class="bi bi-person-plus"></i> {% translate "Thêm khách hàng" %}
     </button>
 </div>
 
 <div class="collapse {% if form.errors %}show{% endif %}" id="formKhach">
     <div class="card shadow-sm mb-3 border-success">
-        <div class="card-header bg-white"><strong>Thêm khách hàng mới</strong></div>
+        <div class="card-header bg-white"><strong>{% translate "Thêm khách hàng mới" %}</strong></div>
         <div class="card-body">
             <form method="post" action="{% url 'le_tan_khach_hang' %}">
                 {% csrf_token %}
@@ -30,24 +31,28 @@
                     <div class="col-md-4">{% include 'core/_field.html' with field=form.cccd %}</div>
                     <div class="col-md-4">{% include 'core/_field.html' with field=form.dia_chi %}</div>
                 </div>
-                <button class="btn btn-sm btn-outline-primary"><i class="bi bi-check-circle"></i> Lưu khách hàng</button>
+                <button class="btn btn-sm btn-outline-primary"><i class="bi bi-check-circle"></i> {% translate "Lưu khách hàng" %}</button>
             </form>
         </div>
     </div>
 </div>
 
-<p class="small text-muted mb-1"><i class="bi bi-info-circle"></i> Bấm đúp vào một dòng để chỉnh sửa thông tin khách hàng.</p>
+<p class="small text-muted mb-1"><i class="bi bi-info-circle"></i> {% translate "Bấm đúp vào một dòng để chỉnh sửa thông tin khách hàng." %}</p>
 <div class="card shadow-sm">
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
             <thead class="table-light">
-                <tr><th>Họ tên</th><th>Giới tính</th><th>Ngày sinh</th><th>Điện thoại</th><th>Mũi tiêm</th><th>QR</th></tr>
+                <tr><th>{% translate "Họ tên" %}</th><th>{% translate "Giới tính" %}</th><th>{% translate "Ngày sinh" %}</th><th>{% translate "Điện thoại" %}</th><th>{% translate "Mũi tiêm" %}</th><th>QR</th></tr>
             </thead>
             <tbody>
                 {% for kh in ds %}
-                <tr ondblclick="location.href='{% url 'le_tan_khach_hang_sua' kh.id %}'" style="cursor:pointer" title="Bấm đúp để sửa">
+                <tr ondblclick="location.href='{% url 'le_tan_khach_hang_sua' kh.id %}'" style="cursor:pointer" title="{% translate "Bấm đúp để sửa" %}">
                     <td class="fw-semibold">{{ kh.ho_ten }}</td>
-                    <td>{{ kh.gioi_tinh }}</td>
+                    <td>
+                        {% if kh.gioi_tinh == 'Nam' %}{% translate "Nam" %}
+                        {% elif kh.gioi_tinh == 'Nu' or kh.gioi_tinh == 'Nữ' %}{% translate "Nữ" %}
+                        {% else %}{% translate "Khác" %}{% endif %}
+                    </td>
                     <td>{{ kh.ngay_sinh|date:"d/m/Y" }}</td>
                     <td>{{ kh.so_dien_thoai }}</td>
                     <td><span class="badge text-bg-info">{{ kh.mui_tiem.count }}</span></td>
@@ -61,7 +66,7 @@
                     </td>
                 </tr>
                 {% empty %}
-                <tr><td colspan="6" class="text-center text-muted py-4">Không tìm thấy khách hàng.</td></tr>
+                <tr><td colspan="6" class="text-center text-muted py-4">{% translate "Không tìm thấy khách hàng." %}</td></tr>
                 {% endfor %}
             </tbody>
         </table>
@@ -73,12 +78,12 @@
     <div class="modal-dialog modal-sm modal-dialog-centered">
         <div class="modal-content text-center">
             <div class="modal-header border-0 pb-0">
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% translate "Đóng" %}"></button>
             </div>
             <div class="modal-body pt-0">
                 <h6 class="fw-bold mb-3" id="qrName"></h6>
                 <div id="modalQrcode" class="d-inline-block p-2 bg-white border mb-2" style="min-width: 180px; min-height: 180px;"></div>
-                <p class="small text-muted mb-0">Quét để xem chứng nhận tiêm chủng</p>
+                <p class="small text-muted mb-0">{% translate "Quét để xem chứng nhận tiêm chủng" %}</p>
             </div>
         </div>
     </div>
